@@ -2,4 +2,4 @@
 
 set -e
 
-source board/rpi/post-image.sh
+source board/raspberrypi/post-image.sh
