@@ -1,0 +1,3 @@
+menu "Packages"
+    source "$BR2_EXTERNAL_AA_PROXY_OS_PATH/package/aa-proxy-rs/Config.in"
+endmenu
