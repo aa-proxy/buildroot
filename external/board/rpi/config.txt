@@ -1,4 +1,12 @@
-kernel=zImage
+[pi4]
+start_file=start4.elf
+fixup_file=fixup4.dat
+
+[all]
+kernel=Image
+
+# enable 64-bit kernel
+arm_64bit=1
 
 disable_splash=1
 boot_delay=0
