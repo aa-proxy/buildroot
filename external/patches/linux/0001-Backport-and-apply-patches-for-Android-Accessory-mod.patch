@@ -69,7 +69,7 @@ index 4c639e9ddedc..77abfbfd2f32 100644
 --- a/drivers/usb/gadget/configfs.c
 +++ b/drivers/usb/gadget/configfs.c
 @@ -12,6 +12,32 @@
- #include "u_f.h"
+ #include "configfs.h"
  #include "u_os_desc.h"
  
 +#ifdef CONFIG_USB_CONFIGFS_UEVENT
@@ -98,7 +98,7 @@ index 4c639e9ddedc..77abfbfd2f32 100644
 +EXPORT_SYMBOL_GPL(create_function_device);
 +#endif
 +
- int check_user_usb_string(const char *name,
+ static int check_user_usb_string(const char *name,
  		struct usb_gadget_strings *stringtab_dev)
  {
 @@ -59,6 +85,13 @@ struct gadget_info {
