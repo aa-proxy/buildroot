@@ -1,0 +1,7 @@
+config BR2_TARGET_UBOOT_ROCKCHIP
+    bool "Enable extra U-Boot build steps for Rockchip"
+    depends on BR2_TARGET_UBOOT
+
+config BR2_TARGET_UBOOT_ROCKCHIP_ENV_FILE
+    string "Rockchip U-Boot env file"
+    depends on BR2_TARGET_UBOOT_ROCKCHIP
