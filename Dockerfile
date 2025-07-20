@@ -25,7 +25,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     python-is-python3 \
     libfl-dev \
-    wireless-regdb
+    wireless-regdb \
+    device-tree-compiler
 
 # Create user and group to not use root
 RUN apt-get install -y --no-install-recommends sudo \
