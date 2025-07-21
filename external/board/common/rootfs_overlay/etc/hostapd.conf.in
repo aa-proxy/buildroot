@@ -10,7 +10,7 @@ wpa=2
 wpa_key_mgmt=WPA-PSK
 rsn_pairwise=CCMP
 
-ssid=AAWirelessDongle
+ssid=aa-proxy-rs
 
-#wpa_passphrase=ConnectAAWirelessDongle
+#wpa_passphrase=aa-proxy-rs
 #country_code=IN
