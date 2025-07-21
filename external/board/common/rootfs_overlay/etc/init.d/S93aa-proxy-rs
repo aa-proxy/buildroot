@@ -1,23 +1,20 @@
 #!/bin/sh
 #
-# Start aawgd daemon
+# Start aa-proxy-rs daemon
 #
+# For documentation and command line parameters go to:
+# https://github.com/manio/aa-proxy-rs
 
-DAEMON="aawgd"
+DAEMON="aa-proxy-rs"
 PIDFILE="/var/run/$DAEMON.pid"
-
+AA_PROXY_RS_ARGS=""
 
 RETVAL=0
 
 case "$1" in
 	start)
-		if [ -z "$AAWG_CONF_SOURCED" ]; then
-			echo "Source /etc/aawgd.conf"
-			source /etc/aawgd.conf
-		fi
-
 		printf "Starting $DAEMON: "
-		start-stop-daemon -S -b -q -m -p "$PIDFILE" -x "/usr/bin/$DAEMON"
+		start-stop-daemon -S -b -q -m -p "$PIDFILE" -x "/usr/bin/$DAEMON" -- $AA_PROXY_RS_ARGS
 		RETVAL=$?
 		[ $RETVAL = 0 ] && echo "OK" || echo "FAIL"
 		;;
