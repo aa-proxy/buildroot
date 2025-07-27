@@ -12,6 +12,7 @@ case "$1" in
 
 		echo "Generate hostapd configuration at /var/run/hostapd.conf"
 
+    mkdir /var/run
 		cp /etc/hostapd.conf.in /var/run/hostapd.conf
 
 		echo >> /var/run/hostapd.conf
