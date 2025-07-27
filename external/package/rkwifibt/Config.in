@@ -1,0 +1,6 @@
+config BR2_PACKAGE_RKWIFIBT
+	bool "Rockchip Bluetooth and Wi-Fi firmware"
+
+config BR2_PACKAGE_RKWIFIBT_RTL8733BS
+	bool "Realtek RTL8733BS firmware"
+	depends on BR2_PACKAGE_RKWIFIBT

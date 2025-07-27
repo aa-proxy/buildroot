@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+# Start rtk_hciattach
+#
+
+DAEMON="rtk_hciattach"
+PIDFILE="/var/run/$DAEMON.pid"
+
+RETVAL=0
+
+case "$1" in
+	start)
+		printf "Starting $DAEMON: "
+		/usr/sbin/rfkill unblock bluetooth
+		start-stop-daemon -S -b -q -m -p "$PIDFILE" -x "/usr/bin/$DAEMON" -- -n -s 115200 /dev/ttyS5 rtk_h5 115200 flow nosleep $(fw_printenv -n ethaddr)
+		RETVAL=$?
+		[ $RETVAL = 0 ] && echo "OK" || echo "FAIL"
+		;;
+	stop)
+		printf "Stopping $DAEMON: "
+		start-stop-daemon -K -q -p "$PIDFILE"
+		RETVAL=$?
+		[ $RETVAL = 0 ] && echo "OK" || echo "FAIL"
+		;;
+	*)
+		echo "Usage: $0 {start|stop}"
+		;;
+esac
+
+exit $RETVAL
