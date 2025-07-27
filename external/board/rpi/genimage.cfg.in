@@ -9,10 +9,10 @@ image boot.vfat {
 	size = 32M
 }
 
-image persist.ext4 {
-	name = "persist"
+image userdata.ext4 {
+	name = "userdata"
 	ext4 {
-		label = "persist"
+		label = "userdata"
 		use-mke2fs = true
 	}
 	size = 32M
@@ -34,8 +34,8 @@ image sdcard.img {
 		image = "rootfs.ext4"
 	}
 
-	partition persist {
+	partition userdata {
 		partition-type = 0x83
-		image = "persist.ext4"
+		image = "userdata.ext4"
 	}
 }
