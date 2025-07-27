@@ -27,7 +27,14 @@ cat <<-_EOF_ > "${START_QEMU_SCRIPT}"
 	cd \${BINARIES_DIR}
 
 	export PATH="${HOST_DIR}/bin:\${PATH}"
-	exec qemu-system-x86_64 -M pc -kernel bzImage -drive file=sdcard.img,if=virtio,format=raw -append "rootwait root=/dev/vda1 rootrw=/dev/vda2 rootrwoptions=rw,noatime  console=tty1 console=ttyS0" -net nic,model=virtio -net user -serial stdio
+	exec qemu-system-x86_64 \
+          -M pc \
+          -kernel bzImage \
+          -drive file=sdcard.img,if=virtio,format=raw \
+          -append "rootwait root=/dev/vda1 rootrw=/dev/vda2 rootrwoptions=rw,noatime console=tty1 console=ttyS0" \
+          -net nic,model=virtio \
+          -net user,hostfwd=tcp::2022-:22,hostfwd=tcp::8080-:80 \
+          -serial stdio
 	)
 _EOF_
 
