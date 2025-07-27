@@ -6,8 +6,8 @@
 case "$1" in
 	start)
 		echo "Setup persistent storage..."
-		mkdir -p /persist/seedrng
-		mkdir -p /persist/bluetooth
+		mkdir -p /var/lib/seedrng
+		mkdir -p /var/lib/bluetooth
 		;;
 	*)
 		echo "Usage: $0 {start}"
