@@ -1,22 +1,7 @@
 #!/bin/bash
 
 #Generate sdcard.img
-BOARD_DIR="$(dirname $0)"
-BOARD_NAME="$(basename ${BOARD_DIR})"
-GENIMAGE_CFG="${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/qemu/genimage.cfg.in"
-GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-
-trap 'rm -rf "${ROOTPATH_TMP}"' EXIT
-ROOTPATH_TMP="$(mktemp -d)"
-
-rm -rf "${GENIMAGE_TMP}"
-
-genimage \
-	--rootpath "${ROOTPATH_TMP}"   \
-	--tmppath "${GENIMAGE_TMP}"    \
-	--inputpath "${BINARIES_DIR}"  \
-	--outputpath "${BINARIES_DIR}" \
-	--config "${GENIMAGE_CFG}"
+support/scripts/genimage.sh -c "${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/qemu/genimage.cfg"
 
 #Generate start-qemu.sh
 START_QEMU_SCRIPT="${BINARIES_DIR}/start-qemu.sh"
