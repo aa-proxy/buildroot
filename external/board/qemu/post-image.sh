@@ -1,7 +1,9 @@
 #!/bin/bash
 
+#Replace TARGET_DIR in genimage.cfg and save to new temporary location
+sed "s|#TARGET_DIR#|${TARGET_DIR}|g" ${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/qemu/genimage.cfg > ${BUILD_DIR}/genimage.conf
 #Generate sdcard.img
-support/scripts/genimage.sh -c "${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/qemu/genimage.cfg"
+support/scripts/genimage.sh -c ${BUILD_DIR}/genimage.conf
 
 #Generate start-qemu.sh
 START_QEMU_SCRIPT="${BINARIES_DIR}/start-qemu.sh"

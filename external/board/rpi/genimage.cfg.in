@@ -11,6 +11,7 @@ image boot.vfat {
 
 image userdata.ext4 {
 	name = "userdata"
+	srcpath = "#TARGET_DIR#/var"
 	ext4 {
 		label = "userdata"
 		use-mke2fs = true
