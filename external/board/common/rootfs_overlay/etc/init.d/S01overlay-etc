@@ -9,11 +9,5 @@ ETC_OVERLAY_WORK_DIR="$USERDATA_MOUNT_POINT/.etc-work"
 mkdir -p "$ETC_OVERLAY_DIR"
 mkdir -p "$ETC_OVERLAY_WORK_DIR"
 
-# copy initial configuration from base filesystem
-if [ -z "$(ls -A "$ETC_OVERLAY_DIR")" ]; then
-    echo "[overlay-etc] Copying original /etc to upperdir..."
-    cp -a "$LOWERDIR/." "$ETC_OVERLAY_DIR/"
-fi
-
 # OverlayFS mount
 mount -t overlay overlay -o lowerdir="$LOWERDIR",upperdir="$ETC_OVERLAY_DIR",workdir="$ETC_OVERLAY_WORK_DIR" $LOWERDIR
