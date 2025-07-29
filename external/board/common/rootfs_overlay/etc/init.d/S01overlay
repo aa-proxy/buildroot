@@ -1,0 +1,17 @@
+#!/bin/sh
+
+USERDATA_MOUNT_POINT="/data"
+
+# root directories handled by overlayfs
+for DIR in etc var; do
+    LOWERDIR="/$DIR"
+    UPPERDIR="$USERDATA_MOUNT_POINT/$DIR"
+    WORKDIR="$USERDATA_MOUNT_POINT/.$DIR-work"
+
+    # creating missing directories for the first time
+    mkdir -p "$UPPERDIR"
+    mkdir -p "$WORKDIR"
+
+    # OverlayFS mount
+    mount -t overlay overlay -o lowerdir="$LOWERDIR",upperdir="$UPPERDIR",workdir="$WORKDIR" "$LOWERDIR"
+done
