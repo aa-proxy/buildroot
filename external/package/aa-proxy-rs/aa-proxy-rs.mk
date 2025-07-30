@@ -1,4 +1,4 @@
-AA_PROXY_RS_VERSION = 1806f011c00e8b798cf8be117313070d43d53469
+AA_PROXY_RS_VERSION = 04625493f2b0bce1a738befe0c0dd315a3a2e806
 AA_PROXY_RS_SITE = $(call github,aa-proxy,aa-proxy-rs,$(AA_PROXY_RS_VERSION))
 BUILDROOT_DIR = $(realpath $(TOPDIR)/..)
 BUILDROOT_COMMIT = $(shell git config --global --add safe.directory $(BUILDROOT_DIR) && git -C $(BUILDROOT_DIR) rev-parse HEAD)
