@@ -2,6 +2,14 @@
 start_file=start4.elf
 fixup_file=fixup4.dat
 
+[pi5]
+# Underclock CPU
+arm_freq=1500
+arm_freq_min=500
+
+# Underclock GPU
+gpu_freq_min=500
+
 [all]
 kernel=Image
 
