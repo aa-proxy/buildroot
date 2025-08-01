@@ -17,5 +17,5 @@ else
     docker run ${PODMAN_ARG} -it --rm \
       -v "$(pwd):/app":z \
       aaproxybr \
-      /bin/bash
+      $1
 fi
