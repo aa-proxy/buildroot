@@ -3,6 +3,8 @@
 set -u
 set -e
 
+${BR2_EXTERNAL_AA_PROXY_OS_PATH}/scripts/generate-issue.sh
+
 # Add a console on tty1
 if [ -e ${TARGET_DIR}/etc/inittab ]; then
     grep -qE '^tty1::' ${TARGET_DIR}/etc/inittab || \
