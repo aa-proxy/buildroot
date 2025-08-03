@@ -1,0 +1,39 @@
+name: Build SD images
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-all:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Build Docker image
+      run: ./docker-dev.sh build
+
+    - name: Build all boards sequentially
+      run: |
+        set -e
+        mkdir images
+        for board in aaw2b rpi02w rpi0w rpi3a rpi4 rpi5; do
+          echo "Building board: $board"
+          ./docker-dev.sh "$board"
+          IMG=buildroot/output/"$board"/images/sdcard.img
+          if [[ -f "$IMG" ]]; then
+            xz -c "$IMG" > images/"$board"-sdcard.img.xz
+          else
+            echo "WARNING: Image $IMG not found!"
+            exit 1
+          fi
+        done
+
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: aa-proxy-rs
+        path: ./images
