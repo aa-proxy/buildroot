@@ -14,7 +14,7 @@ jobs:
         submodules: recursive
 
     - name: Build Docker image
-      run: ./docker-dev.sh build
+      run: CONTAINER_ENGINE=docker ./docker-dev.sh build
 
     - name: Build all boards sequentially
       run: |
@@ -22,7 +22,7 @@ jobs:
         mkdir images
         for board in aaw2b rpi02w rpi0w rpi3a rpi4 rpi5; do
           echo "Building board: $board"
-          ./docker-dev.sh "$board"
+          CONTAINER_ENGINE=docker ./docker-dev.sh "$board"
           IMG=buildroot/output/"$board"/images/sdcard.img
           if [[ -f "$IMG" ]]; then
             xz -c "$IMG" > images/"$board"-sdcard.img.xz
