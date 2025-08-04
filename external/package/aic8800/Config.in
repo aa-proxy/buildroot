@@ -1,6 +1,5 @@
 menuconfig BR2_PACKAGE_AIC8800
     bool "AIC8800 Support"
-    depends on BR2_LINUX_KERNEL
     help
       AICSemi AIC8800 Wireless Drivers
 
@@ -40,6 +39,7 @@ config BR2_PACKAGE_AIC8800_BT_LPM
 config BR2_PACKAGE_AIC8800_BT_WORKAROUND
     bool "Workaround"
     depends on BR2_PACKAGE_AIC8800_INTERFACE_SDIO
+    depends on BR2_PACKAGE_BLUEZ5_UTILS_TOOLS
     help
         AICSemi AIC8800 btlpm driver seems broken(?). Enable this to work around this by utilizing btattach. 
 
