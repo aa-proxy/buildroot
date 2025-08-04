@@ -41,6 +41,13 @@ fi
 CMD="$1"
 shift
 
+# Use -it only if TTY is available (e.g., not in CI)
+if [ -t 1 ]; then
+  INTERACTIVE="-it"
+else
+  INTERACTIVE=""
+fi
+
 if [[ "$CMD" == "build" ]]; then
     echo "Building image with $ENGINE..."
     "$ENGINE" build \
@@ -49,7 +56,7 @@ if [[ "$CMD" == "build" ]]; then
         -t aaproxybr .
 else
     echo "Running container with $ENGINE: aaproxybr $CMD $*"
-    "$ENGINE" run $USERNS_ARG -it --rm \
+    "$ENGINE" run $USERNS_ARG $INTERACTIVE --rm \
         -v "$(pwd):/app":z \
         aaproxybr \
         "$CMD" "$@"
