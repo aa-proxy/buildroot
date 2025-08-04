@@ -4,37 +4,45 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-all:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        board: [aaw2b, rpi02w, rpi0w, rpi3a, rpi4, rpi5]
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-    - name: Build Docker image
-      run: CONTAINER_ENGINE=docker ./docker-dev.sh build
+      - name: Build Docker image
+        run: CONTAINER_ENGINE=docker ./docker-dev.sh build
 
-    - name: Build all boards sequentially
-      run: |
-        set -e
-        mkdir images
-        for board in aaw2b rpi02w rpi0w rpi3a rpi4 rpi5; do
-          echo "Building board: $board"
-          CONTAINER_ENGINE=docker ./docker-dev.sh "$board"
-          IMG=buildroot/output/"$board"/images/sdcard.img
+      - name: Build image for ${{ matrix.board }}
+        run: |
+          set -e
+          mkdir images
+          echo "Building board: ${{ matrix.board }}"
+          CONTAINER_ENGINE=docker ./docker-dev.sh "${{ matrix.board }}"
+          IMG=buildroot/output/${{ matrix.board }}/images/sdcard.img
           if [[ -f "$IMG" ]]; then
-            xz -c "$IMG" > images/"$board"-sdcard.img.xz
+            xz -c "$IMG" > images/${{ matrix.board }}-sdcard.img.xz
           else
             echo "WARNING: Image $IMG not found!"
             #exit 1
           fi
-          rm -rf buildroot/output/"$board"
-        done
 
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: aa-proxy-rs
-        path: ./images
+      - name: Upload Artifact for ${{ matrix.board }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.board }}-sdcard
+          path: images/${{ matrix.board }}-sdcard.img.xz
+
+  merge:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/upload-artifact/merge@v4
+        with:
+          name: aa-proxy-rs-merged
