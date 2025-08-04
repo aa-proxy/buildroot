@@ -40,3 +40,13 @@ dtparam=krnbt=on
 
 # Enable dwc2 required for gadget mode
 dtoverlay=dwc2,dr_mode=peripheral
+
+# finally, force the 32-bit kernel for pi0w
+[pi0w]
+kernel=zImage
+arm_64bit=0
+
+# override inherited settings back to restore 64-bit kernel on Pi Zero 2 W
+[pi02]
+kernel=Image
+arm_64bit=1
