@@ -30,6 +30,7 @@ jobs:
             echo "WARNING: Image $IMG not found!"
             #exit 1
           fi
+          rm -rf buildroot/output/"$board"
         done
 
     - name: Upload a Build Artifact
