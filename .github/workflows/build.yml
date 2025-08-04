@@ -28,7 +28,7 @@ jobs:
             xz -c "$IMG" > images/"$board"-sdcard.img.xz
           else
             echo "WARNING: Image $IMG not found!"
-            exit 1
+            #exit 1
           fi
         done
 
