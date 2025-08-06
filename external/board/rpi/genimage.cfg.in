@@ -1,6 +1,5 @@
 image boot.vfat {
 	vfat {
-		label = "WirelessAA"
 		files = {
 #BOOT_FILES#
 		}
