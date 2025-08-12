@@ -2,6 +2,9 @@
 
 USERDATA_MOUNT_POINT="/data"
 
+echo "Mounting userdata partition and applying OverlayFS..."
+mount $USERDATA_MOUNT_POINT
+
 # root directories handled by overlayfs
 for DIR in etc var; do
     LOWERDIR="/$DIR"
@@ -15,3 +18,6 @@ for DIR in etc var; do
     # OverlayFS mount
     mount -t overlay overlay -o lowerdir="$LOWERDIR",upperdir="$UPPERDIR",workdir="$WORKDIR" "$LOWERDIR"
 done
+
+echo "OverlayFS mounted, starting BusyBox init (/sbin/init)..."
+exec /sbin/init
