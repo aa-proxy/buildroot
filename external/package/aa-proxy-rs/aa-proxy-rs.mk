@@ -11,6 +11,7 @@ AA_PROXY_RS_COMMIT = $(shell git config --global --add safe.directory $(AA_PROXY
 define AA_PROXY_RS_INSTALL_TARGET_CMDS
     $(INSTALL) -D -m 0755 $(@D)/target/$(RUSTC_TARGET_NAME)/release/aa-proxy-rs $(TARGET_DIR)/usr/bin
     $(INSTALL) -D -m 0644 $(@D)/target/release/config.toml $(TARGET_DIR)/etc/aa-proxy-rs/config.toml
+    $(INSTALL) -D -m 0755 $(@D)/contrib/S93aa-proxy-rs $(TARGET_DIR)/etc/init.d
 endef
 
 # pass git hashes as env variables
