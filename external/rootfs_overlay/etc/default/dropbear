@@ -2,12 +2,10 @@
 
 DROPBEAR_ARGS="-b /etc/issue"
 
-if [ -z "$AAWG_CONF_SOURCED" ]; then
-    echo "Source /etc/aawgd.conf"
-    source /etc/aawgd.conf
-fi
+# Skip SSH startup if explicitly disabled in config.toml
+CONFIG_FILE="/etc/aa-proxy-rs/config.toml"
 
-if [ -z "$AAWG_ENABLE_SSH" ]; then
-    echo "AAWG_ENABLE_SSH is not set. Skipping SSH setup."
+if [ -f "$CONFIG_FILE" ] && grep -Eq '^\s*enable_ssh\s*=\s*false\s*$' "$CONFIG_FILE"; then
+    echo "SSH is disabled via $CONFIG_FILE"
     exit
 fi
