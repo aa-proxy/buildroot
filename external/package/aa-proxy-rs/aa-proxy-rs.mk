@@ -10,12 +10,18 @@ AA_PROXY_RS_COMMIT = $(shell git config --global --add safe.directory $(AA_PROXY
 
 define AA_PROXY_RS_INSTALL_TARGET_CMDS
     $(INSTALL) -D -m 0755 $(@D)/target/$(RUSTC_TARGET_NAME)/release/aa-proxy-rs $(TARGET_DIR)/usr/bin
-    $(INSTALL) -D -m 0644 $(@D)/contrib/config.toml $(TARGET_DIR)/etc/aa-proxy-rs/config.toml
+    $(INSTALL) -D -m 0644 $(@D)/target/release/config.toml $(TARGET_DIR)/etc/aa-proxy-rs/config.toml
 endef
 
 # pass git hashes as env variables
 AA_PROXY_RS_CARGO_ENV = \
     AA_PROXY_COMMIT="$(AA_PROXY_RS_COMMIT)" \
     BUILDROOT_COMMIT="$(BUILDROOT_COMMIT)"
+
+# default config file generator
+define AA_PROXY_RS_GENERATE_CONFIG
+    cd $(@D) && env PATH=$${PATH}:$(HOST_DIR)/bin cargo run --release --bin generate_config
+endef
+AA_PROXY_RS_POST_BUILD_HOOKS += AA_PROXY_RS_GENERATE_CONFIG
 
 $(eval $(cargo-package))
