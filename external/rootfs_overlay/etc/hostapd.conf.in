@@ -1,16 +1,16 @@
 ctrl_interface=/var/run/hostapd
 interface=wlan0
 
-hw_mode=g
+hw_mode={{HW_MODE}}
 ieee80211n=1
-channel=6
+channel={{CHANNEL}}
 
 auth_algs=1
 wpa=2
 wpa_key_mgmt=WPA-PSK
 rsn_pairwise=CCMP
 
-ssid=aa-proxy-rs
+ssid={{SSID}}
 
-#wpa_passphrase=aa-proxy-rs
-#country_code=IN
+wpa_passphrase={{WPA_PASSPHRASE}}
+country_code={{COUNTRY_CODE}}
