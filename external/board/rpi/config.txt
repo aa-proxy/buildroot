@@ -29,11 +29,14 @@ disable_overscan=1
 # Add the following line if the board need reduce power drain and increase performance disabling hdmi port
 hdmi_blanking=1
 
-# How much memory in MB to assign to the GPU on Pi models having
-# 256, 512 or 1024 MB total memory
-gpu_mem_256=100
-gpu_mem_512=100
-gpu_mem_1024=100
+# How much memory in MB to assign to the GPU on Pi models having 256, 512 or 1024 MB total memory
+# start_cd.elf (cut-down version without codecs and 3D) is used in the case we specify 16MB
+[pi0]
+gpu_mem_256=16
+gpu_mem_512=16
+[all]
+gpu_mem_512=64
+gpu_mem_1024=64
 
 # Enable autoprobing of Bluetooth driver without need of hciattach/btattach
 dtparam=krnbt=on
