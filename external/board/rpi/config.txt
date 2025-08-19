@@ -23,11 +23,17 @@ disable_poe_fan=1
 # To use an external initramfs file
 #initramfs rootfs.cpio.gz
 
-# Disable overscan assuming the display supports displaying the full resolution
-# If the text shown on the screen disappears off the edge, comment this out
-disable_overscan=1
-# Add the following line if the board need reduce power drain and increase performance disabling hdmi port
-hdmi_blanking=1
+# disable HDMI (saves power)
+max_framebuffers=0
+# don't try to read HDMI eeprom
+hdmi_blanking=2
+hdmi_ignore_edid=0xa5000080
+hdmi_ignore_cec_init=1
+hdmi_ignore_cec=1
+hdmi_ignore_hotplug=1
+disable_fw_kms_setup=1
+# disable composite video output
+enable_tvout=0
 
 # How much memory in MB to assign to the GPU on Pi models having 256, 512 or 1024 MB total memory
 # start_cd.elf (cut-down version without codecs and 3D) is used in the case we specify 16MB
