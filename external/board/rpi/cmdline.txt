@@ -1,1 +1,1 @@
-root=/dev/mmcblk0p2 init=/etc/overlay_init ro rootwait console=tty1
+root=/dev/mmcblk0p2 init=/etc/overlay_init ro rootwait quiet logo.nologo console=tty2
