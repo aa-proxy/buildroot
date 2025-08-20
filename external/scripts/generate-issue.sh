@@ -5,7 +5,7 @@ git config --global --add safe.directory "$BUILDROOT_DIR"
 BUILDROOT_COMMIT=$(git -C "$BUILDROOT_DIR" log -n1 --pretty=format:%h HEAD)
 
 cat <<EOF > "$TARGET_DIR/etc/issue"
-Welcome to aa-proxy-rs
+Welcome to aa-proxy
 
  .---.-.---.-.______.-----.----.-----.--.--.--.--.
  |  _  |  _  |______|  _  |   _|  _  |_   _|  |  |
