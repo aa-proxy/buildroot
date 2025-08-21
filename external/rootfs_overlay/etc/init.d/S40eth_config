@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+# Configure eth0 based on eth_mode in config.toml
+#
+
+CONFIG_FILE="/etc/aa-proxy-rs/config.toml"
+
+case "$1" in
+    start)
+        echo "Configuring eth0..."
+
+        if [ ! -f "$CONFIG_FILE" ]; then
+            echo "Config file not found: $CONFIG_FILE"
+            exit 1
+        fi
+
+        # Check if eth_mode is set to an empty string or doesn't exist
+        if grep -Eq '^\s*eth_mode\s*=\s*""\s*$' "$CONFIG_FILE" || ! grep -Eq '^\s*eth_mode\s*=' "$CONFIG_FILE"; then
+            echo "eth_mode is empty or not set. Skipping eth0 config."
+            exit 0
+        fi
+
+        # Extract the value of eth_mode (without quotes)
+        ETH_MODE=$(grep -E '^\s*eth_mode\s*=' "$CONFIG_FILE" | sed -E 's/.*=\s*"([^"]*)"\s*$/\1/')
+
+        # Convert to lowercase for case-insensitive comparison
+        ETH_MODE_LOWER=$(echo "$ETH_MODE" | tr '[:upper:]' '[:lower:]')
+
+        if [ "$ETH_MODE_LOWER" = "dhcp" ]; then
+            echo "eth_mode is DHCP — running udhcpc"
+            udhcpc -t1 -A3 -b -R -O search -O staticroutes -p /var/run/udhcpc.eth0.pid -i eth0
+        else
+            echo "eth_mode is static — setting IP $ETH_MODE"
+            ip addr add "$ETH_MODE" dev eth0
+            ip link set eth0 up
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {start}"
+        exit 1
+        ;;
+esac
+
+exit 0
