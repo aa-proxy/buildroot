@@ -22,17 +22,11 @@ boot_delay=0
 # To use an external initramfs file
 #initramfs rootfs.cpio.gz
 
-# disable HDMI (saves power)
-max_framebuffers=0
-# don't try to read HDMI eeprom
-hdmi_blanking=2
-hdmi_ignore_edid=0xa5000080
-hdmi_ignore_cec_init=1
-hdmi_ignore_cec=1
-hdmi_ignore_hotplug=1
-disable_fw_kms_setup=1
-# disable composite video output
-enable_tvout=0
+# Disable overscan assuming the display supports displaying the full resolution
+# If the text shown on the screen disappears off the edge, comment this out
+disable_overscan=1
+# Add the following line if the board need reduce power drain and increase performance disabling hdmi port
+hdmi_blanking=1
 
 # all these options cause a wait for an I2C bus response
 force_eeprom_read=0
