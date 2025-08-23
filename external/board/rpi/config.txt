@@ -42,6 +42,14 @@ disable_touchscreen=1
 camera_auto_detect=0
 display_auto_detect=0
 
+# The following values are for speeding up the initial boot time:
+# Don't force turbo mode permanently (preserves warranty)
+force_turbo=0
+# Enable max CPU frequency for the first 20 seconds after boot
+initial_turbo=20
+# Disable automatic firmware-based boosting (manual control only)
+arm_boost=0
+
 # How much memory in MB to assign to the GPU on Pi models having 256, 512 or 1024 MB total memory
 # start_cd.elf (cut-down version without codecs and 3D) is used in the case we specify 16MB
 [pi0]
