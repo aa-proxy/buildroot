@@ -13,6 +13,8 @@ auto wlan0
 iface wlan0 inet static
   address 10.0.0.1
   netmask 255.255.255.0
+  # disable power saving on wlan0 interface
+  pre-up iw wlan0 set power_save off
   pre-up hostapd -B /var/run/hostapd.conf -t -f /var/log/hostapd
   #post-up dnsmasq
   #pre-down killall -q dnsmasq
