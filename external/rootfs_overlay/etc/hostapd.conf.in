@@ -11,6 +11,10 @@ wpa=2
 wpa_key_mgmt=WPA-PSK
 rsn_pairwise=CCMP
 
+# Be less agressive so that BT has a chance
+beacon_int=500
+ht_capab=[SHORT-GI-20]
+
 ssid={{SSID}}
 
 wpa_passphrase={{WPA_PASSPHRASE}}
