@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        board: [aaw2b, rpi02w, rpi0w, rpi3a, rpi4, rpi5]
+        board: [aaw2b, rpi02w, rpi0w, rpi3a, rpi4, rpi5, radxa03w]
 
     steps:
       - name: Checkout
