@@ -2,8 +2,10 @@ ctrl_interface=/var/run/hostapd
 interface=wlan0
 
 hw_mode={{HW_MODE}}
-ieee80211n=1
+ieee80211be={{BE_MODE}}
+ieee80211ax={{AX_MODE}}
 ieee80211ac={{AC_MODE}}
+ieee80211n={{N_MODE}}
 channel={{CHANNEL}}
 
 auth_algs=1
