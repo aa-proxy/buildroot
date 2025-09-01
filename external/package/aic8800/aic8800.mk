@@ -3,7 +3,7 @@
 # AICSemi AIC8800 Drivers
 #
 ################################################################################
-AIC8800_VERSION = 9d287bdd77e45647cfa4087ef0d615ce96db910a
+AIC8800_VERSION = eb8652a3d85feeba19474e80e362bf0adaf98cfd
 AIC8800_SITE = $(call github,radxa-pkg,aic8800,$(AIC8800_VERSION))
 AIC8800_LICENSE = GPL-3.0
 AIC8800_LICENSE_FILES = LICENCE
