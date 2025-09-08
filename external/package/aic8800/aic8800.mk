@@ -3,7 +3,7 @@
 # AICSemi AIC8800 Drivers
 #
 ################################################################################
-AIC8800_VERSION = dd2afa18bc47dfde591ee981b57bd7b22d017a0d
+AIC8800_VERSION = eb8652a3d85feeba19474e80e362bf0adaf98cfd
 AIC8800_SITE = $(call github,radxa-pkg,aic8800,$(AIC8800_VERSION))
 AIC8800_LICENSE = GPL-3.0
 AIC8800_LICENSE_FILES = LICENCE
@@ -61,7 +61,7 @@ AIC8800_PRE_PATCH_HOOKS += AIC8800_APPLY_PATCHES
 define AIC8800_COPY_FIRMWARE
 	mkdir -p $(TARGET_DIR)/lib/firmware/aic8800_fw
 	$(foreach model,$(AIC8800_ENABLED_MODELS), \
-		mkdir $(TARGET_DIR)/lib/firmware/aic8800_fw/$(model); \
+		mkdir -p $(TARGET_DIR)/lib/firmware/aic8800_fw/$(AIC8800_INTERFACE)/$(model); \
 		$(INSTALL) -D -m 0755 $(@D)/src/$(AIC8800_INTERFACE)/driver_fw/fw/$(model)/* \
 		                     $(TARGET_DIR)/lib/firmware/aic8800_fw/$(AIC8800_INTERFACE)/$(model)/;)
 endef
