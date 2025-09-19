@@ -2,9 +2,21 @@
 
 USERDATA_MOUNT_POINT="/data"
 
-echo "Mounting userdata partition and applying OverlayFS..."
+echo "Mounting userdata partition..."
 mount $USERDATA_MOUNT_POINT
 
+# Check for factory reset trigger
+FACTORY_RESET_FLAG="$USERDATA_MOUNT_POINT/factory-reset"
+if [ -f "$FACTORY_RESET_FLAG" ]; then
+    echo "Factory reset flag found! Wiping all data in $USERDATA_MOUNT_POINT..."
+
+    # Wipe all content under /data
+    find "$USERDATA_MOUNT_POINT" -mindepth 1 -exec rm -rf {} +
+
+    echo "Factory reset complete."
+fi
+
+echo "Applying OverlayFS..."
 # root directories handled by overlayfs
 for DIR in etc var; do
     LOWERDIR="/$DIR"
