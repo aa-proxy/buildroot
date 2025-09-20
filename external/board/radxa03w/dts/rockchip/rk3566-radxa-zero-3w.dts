@@ -93,15 +93,18 @@
 	status = "okay";
 };
 
+&uart3 {
+	status = "okay";
+};
 
 &i2c3{
  	status = "okay";
 	pinctrl-0 = <&i2c3m1_xfer>;
- 
+
  	usbc0: usb-typec@22 {
  		compatible = "fcs,fusb302";
  		reg = <0x22>;
- 
+
  		interrupt-parent = <&gpio3>;
  		interrupts = <RK_PC7 IRQ_TYPE_LEVEL_LOW>;
  		vbus-supply = <&vbus>;
@@ -109,7 +112,7 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&usbc0_int>;
 		status="okay";
- 
+
  		connector {
  			compatible = "usb-c-connector";
 			data-role = "host";
@@ -123,7 +126,7 @@
  			sink-pdos = <PDO_FIXED(5000, 3000, PDO_FIXED_USB_COMM)>;
  		};
  	};	
-}; 
+};
 
 &pinctrl {
 	usb-typec {
