@@ -12,7 +12,7 @@ if [ -f "$FACTORY_RESET_FLAG" ]; then
     echo "Factory reset flag found! Wiping all data in $USERDATA_MOUNT_POINT..."
 
     # Wipe all content under /data
-    find "$USERDATA_MOUNT_POINT" -mindepth 1 -exec rm -rf {} +
+    rm -rf /data/*
 
     echo "Factory reset complete."
 fi
