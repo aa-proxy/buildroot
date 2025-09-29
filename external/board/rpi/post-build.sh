@@ -3,6 +3,5 @@
 set -u
 set -e
 
-${BR2_EXTERNAL_AA_PROXY_OS_PATH}/scripts/generate-issue.sh
-
-source board/raspberrypi/post-build.sh
+source ${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/common/post-build.sh
+source ${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/common/add_tty1.sh

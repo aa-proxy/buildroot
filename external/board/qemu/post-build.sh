@@ -3,14 +3,9 @@
 set -u
 set -e
 
-${BR2_EXTERNAL_AA_PROXY_OS_PATH}/scripts/generate-issue.sh
+${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/common/generate-issue.sh
 
-# Add a console on tty1
-if [ -e ${TARGET_DIR}/etc/inittab ]; then
-    grep -qE '^tty1::' ${TARGET_DIR}/etc/inittab || \
-	sed -i '/GENERIC_SERIAL/a\
-tty1::respawn:/sbin/getty -L  tty1 0 vt100 # QEMU graphical window' ${TARGET_DIR}/etc/inittab
-fi
+${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/common/add_tty1.sh
 
 # Ensure proper /etc/network/interfaces for qemu network access
     cat << EOF > ${TARGET_DIR}/etc/network/interfaces
