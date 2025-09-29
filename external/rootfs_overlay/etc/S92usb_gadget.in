@@ -9,6 +9,7 @@ SERIAL_NUMBER="{{SERIAL}}"
 
 ACCESSORY_GADGET_NAME="accessory"
 DEFAULT_GADGET_NAME="default"
+SERIAL_GADGET_NAME="serial"
 
 FUNCTIONFS_PATH=/dev/ffs-mtp
 DAEMON=umtprd
@@ -54,6 +55,26 @@ start() {
 		ln -s functions/ffs.mtp configs/c.1
 	fi
 
+        # Setup serial config
+        cd /sys/kernel/config/usb_gadget
+        if [ ! -d "$SERIAL_GADGET_NAME" ]; then
+                mkdir "$SERIAL_GADGET_NAME"
+                cd "$SERIAL_GADGET_NAME"
+                echo "0x1D6B" > idVendor
+                echo "0x0104" > idProduct
+                mkdir strings/0x409
+                echo "$SERIAL_NUMBER" > strings/0x409/serialnumber
+                echo "$MANUFACTURER" > strings/0x409/manufacturer
+                echo "$PRODUCT" > strings/0x409/product
+                mkdir configs/c.1
+                mkdir configs/c.1/strings/0x409
+                echo "CDC ACM Configuration" > configs/c.1/strings/0x409/configuration
+                echo 500 > configs/c.1/MaxPower
+                mkdir functions/acm.usb0
+                ln -s functions/acm.usb0 configs/c.1/
+                echo $(ls /sys/class/udc/) > UDC
+        fi
+
 	# Setting up usb_gadget:
 	echo "OK"
 
@@ -73,6 +94,7 @@ stop() {
 	cd /sys/kernel/config/usb_gadget
 	echo "" > "$ACCESSORY_GADGET_NAME"/UDC
 	echo "" > "$DEFAULT_GADGET_NAME"/UDC
+        echo "" > "$SERIAL_GADGET_NAME"/UDC
 
 	# Disable usb_gadget:
 	echo "OK"
