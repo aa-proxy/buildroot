@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Unblock radios
+#
+
+case "$1" in
+	start)
+		echo "RFKill is unblocking radios..."
+        rfkill unblock 0
+        rfkill unblock 1
+		;;
+	*)
+		echo "Usage: $0 {start}"
+		exit 1
+esac
+
+exit $?

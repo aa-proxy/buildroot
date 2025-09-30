@@ -1,0 +1,2 @@
+CONFIG_CMDLINE="user_debug=31 init=/etc/overlay_init"
+CONFIG_BT_RFCOMM_TTY=y

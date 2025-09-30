@@ -1,10 +1,40 @@
 #!/bin/sh
 
 USERDATA_MOUNT_POINT="/data"
+FACTORY_RESET_FLAG="$USERDATA_MOUNT_POINT/factory-reset"
+PENDING_RESTORE_ARCHIVE="$USERDATA_MOUNT_POINT/pending_restore.tar.gz"
 
-echo "Mounting userdata partition and applying OverlayFS..."
+echo "Mounting userdata partition..."
 mount $USERDATA_MOUNT_POINT
 
+# === FACTORY RESET ===
+if [ -f "$FACTORY_RESET_FLAG" ]; then
+    echo "Factory reset flag found! Wiping all data in $USERDATA_MOUNT_POINT..."
+
+    # Wipe all content under /data
+    rm -rf /data/*
+
+    echo "Factory reset complete."
+fi
+
+# === PENDING RESTORE ===
+if [ -f "$PENDING_RESTORE_ARCHIVE" ]; then
+    echo "Pending restore archive found. Preparing for restore..."
+
+    # Delete everything EXCEPT the restore archive itself
+    find "$USERDATA_MOUNT_POINT" -mindepth 1 ! -path "$PENDING_RESTORE_ARCHIVE" -exec rm -rf {} +
+
+    echo "Extracting restore archive..."
+    tar -xzf "$PENDING_RESTORE_ARCHIVE" -C "$USERDATA_MOUNT_POINT"
+
+    echo "Removing restore archive..."
+    rm -f "$PENDING_RESTORE_ARCHIVE"
+
+    echo "Restore complete."
+fi
+
+# === OVERLAY SETUP ===
+echo "Applying OverlayFS..."
 # root directories handled by overlayfs
 for DIR in etc var; do
     LOWERDIR="/$DIR"

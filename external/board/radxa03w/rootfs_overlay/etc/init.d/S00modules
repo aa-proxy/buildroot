@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Load kernel modules
+#
+
+case "$1" in
+	start)
+		echo "Loading kernel modules..."
+		modprobe -a hci_uart aic8800_bsp aic8800_fdrv # Wireless
+		modprobe -a phy-rockchip-naneng-combphy libcomposite # USB gadget drivers
+		modprobe fusb302
+		;;
+	*)
+		echo "Usage: $0 {start}"
+		exit 1
+esac
+
+exit $?

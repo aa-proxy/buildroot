@@ -23,5 +23,5 @@ else
     cd ${BUILDROOT_DIR}
     make BR2_EXTERNAL=../external/ O=${OUTPUT} gen_${ARG}_defconfig
     cd ${OUTPUT}
-    make
+    make -j$(nproc --all)
 fi

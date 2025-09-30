@@ -2,18 +2,16 @@ ctrl_interface=/var/run/hostapd
 interface=wlan0
 
 hw_mode={{HW_MODE}}
-ieee80211n=1
+ieee80211be={{BE_MODE}}
+ieee80211ax={{AX_MODE}}
 ieee80211ac={{AC_MODE}}
+ieee80211n={{N_MODE}}
 channel={{CHANNEL}}
 
 auth_algs=1
 wpa=2
 wpa_key_mgmt=WPA-PSK
 rsn_pairwise=CCMP
-
-# Be less agressive so that BT has a chance
-beacon_int=500
-ht_capab=[SHORT-GI-20]
 
 ssid={{SSID}}
 

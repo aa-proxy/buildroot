@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# Init script for dynamic configuration generation
+#
+# This script generates runtime configuration files from templates,
+# based on the current platform, environment variables, or detected hardware.
+#
+# It is executed at system startup before starting core services.
+#
+
+case "$1" in
+	start)
+		/usr/bin/aa-proxy-rs --generate-system-config
+		;;
+	*)
+		echo "Usage: $0 {start}"
+		exit 1
+esac
+
+exit $?
