@@ -5,7 +5,7 @@ set -e
 
 ${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/common/generate-issue.sh
 
-source ${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/common/add_tty1.sh
+${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/common/add_tty1.sh
 
 # Ensure proper /etc/network/interfaces for qemu network access
     cat << EOF > ${TARGET_DIR}/etc/network/interfaces
