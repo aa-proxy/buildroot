@@ -1,4 +1,4 @@
-AA_PROXY_RS_VERSION = main
+AA_PROXY_RS_VERSION = 630e0d9847417ba480ae363438d3de0d6d156dcc
 AA_PROXY_RS_SITE = https://github.com/aa-proxy/aa-proxy-rs.git
 AA_PROXY_RS_SITE_METHOD = git
 
