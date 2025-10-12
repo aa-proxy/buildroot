@@ -1,0 +1,5 @@
+config BR2_PACKAGE_AA_PROXY_GO_OBD_FEEDER
+	bool "aa-proxy-go-obd-feeder"
+	depends on BR2_PACKAGE_HOST_GO_TARGET_ARCH_SUPPORTS
+	help
+	  A little golang companion app for aa-proxy-rs that scrapes USB OBD Scanners for state of charge information and injects it into aa-proxy-rs
