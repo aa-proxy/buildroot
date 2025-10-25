@@ -77,6 +77,11 @@ start() {
 			ln -s functions/acm.usb0 configs/c.1/
 			echo $(ls /sys/class/udc/) > UDC
 		fi
+	else
+		# usb_serial_console is not true → create symlink to avoid getty spamming logs
+		if [ ! -e /dev/ttyGS0 ]; then
+			ln -sf /dev/tty63 /dev/ttyGS0
+		fi
 	fi
 
 	# Setting up usb_gadget:
