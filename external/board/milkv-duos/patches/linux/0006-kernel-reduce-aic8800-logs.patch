@@ -1,0 +1,42 @@
+From f80d9894e0a3a3b09f60d2759365312acc12c5ab Mon Sep 17 00:00:00 2001
+From: carbon <carbon@milkv.io>
+Date: Fri, 11 Jul 2025 14:06:01 +0800
+Subject: [PATCH] kernel: reduce aic8800 logs
+
+Signed-off-by: carbon <carbon@milkv.io>
+---
+ .../net/wireless/aicsemi/aic8800/aic8800_bsp/aic_bsp_main.c    | 3 ++-
+ drivers/net/wireless/aicsemi/aic8800/aic8800_fdrv/rwnx_main.c  | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aic_bsp_main.c b/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aic_bsp_main.c
+index 7666a1f09ed5..941ceb31539a 100644
+--- a/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aic_bsp_main.c
++++ b/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aic_bsp_main.c
+@@ -15,7 +15,8 @@
+ #define DRV_AUTHOR            "AICSemi"
+ #define DRV_VERS_MOD          "1.0"
+ 
+-int aicwf_dbg_level_bsp = LOGERROR|LOGINFO|LOGDEBUG|LOGTRACE;
++//int aicwf_dbg_level_bsp = LOGERROR|LOGINFO|LOGDEBUG|LOGTRACE;
++int aicwf_dbg_level_bsp = LOGERROR;
+ 
+ static struct platform_device *aicbsp_pdev;
+ 
+diff --git a/drivers/net/wireless/aicsemi/aic8800/aic8800_fdrv/rwnx_main.c b/drivers/net/wireless/aicsemi/aic8800/aic8800_fdrv/rwnx_main.c
+index 176dfd01dd41..e75bf38c711d 100644
+--- a/drivers/net/wireless/aicsemi/aic8800/aic8800_fdrv/rwnx_main.c
++++ b/drivers/net/wireless/aicsemi/aic8800/aic8800_fdrv/rwnx_main.c
+@@ -510,7 +510,8 @@ static const int rwnx_hwq2uapsd[NL80211_NUM_ACS] = {
+ 
+ 
+ extern uint8_t scanning;
+-int aicwf_dbg_level = LOGERROR|LOGINFO|LOGDEBUG|LOGTRACE;
++//int aicwf_dbg_level = LOGERROR|LOGINFO|LOGDEBUG|LOGTRACE;
++int aicwf_dbg_level = LOGERROR;
+ module_param(aicwf_dbg_level, int, 0660);
+ int testmode = 0;
+ char aic_fw_path[200];
+-- 
+2.39.5
+

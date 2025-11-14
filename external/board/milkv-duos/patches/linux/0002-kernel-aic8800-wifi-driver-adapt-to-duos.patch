@@ -1,0 +1,332 @@
+From b33ef1adecc2358274450f5f85eed16ddd1e16d2 Mon Sep 17 00:00:00 2001
+From: carbon <carbon@milkv.io>
+Date: Tue, 6 Aug 2024 17:11:50 +0800
+Subject: [PATCH] kernel: aic8800 wifi driver adapt to duos
+
+Signed-off-by: carbon <carbon@milkv.io>
+
+Conflicts:
+      drivers/net/wireless/Kconfig
+      drivers/net/wireless/Makefile
+Moved after realtek to prevent future conflicts [@manio]
+---
+ drivers/net/wireless/Kconfig                  |  1 +
+ drivers/net/wireless/Makefile                 |  1 +
+ drivers/net/wireless/aicsemi/Kconfig          | 16 ++++++
+ drivers/net/wireless/aicsemi/Makefile         |  6 +++
+ drivers/net/wireless/aicsemi/aic8800/Kconfig  | 10 ++--
+ drivers/net/wireless/aicsemi/aic8800/Makefile | 12 +++--
+ .../aicsemi/aic8800/aic8800_bsp/Makefile      |  9 +++-
+ .../aicsemi/aic8800/aic8800_bsp/aicsdio.c     | 51 +++++++++++++++++++
+ .../aicsemi/aic8800/aic8800_btlpm/Makefile    |  8 ++-
+ .../aicsemi/aic8800/aic8800_fdrv/Makefile     |  9 +++-
+ 10 files changed, 110 insertions(+), 13 deletions(-)
+ create mode 100644 drivers/net/wireless/aicsemi/Kconfig
+ create mode 100644 drivers/net/wireless/aicsemi/Makefile
+
+diff --git a/drivers/net/wireless/Kconfig b/drivers/net/wireless/Kconfig
+index e9369b138de8..23fb7e36bbd5 100644
+--- a/drivers/net/wireless/Kconfig
++++ b/drivers/net/wireless/Kconfig
+@@ -45,6 +45,7 @@ source "drivers/net/wireless/mediatek/Kconfig"
+ source "drivers/net/wireless/microchip/Kconfig"
+ source "drivers/net/wireless/ralink/Kconfig"
+ source "drivers/net/wireless/realtek/Kconfig"
++source "drivers/net/wireless/aicsemi/Kconfig"
+ source "drivers/net/wireless/rsi/Kconfig"
+ source "drivers/net/wireless/st/Kconfig"
+ source "drivers/net/wireless/ti/Kconfig"
+diff --git a/drivers/net/wireless/Makefile b/drivers/net/wireless/Makefile
+index 87f7f229f171..b546e8ecec43 100644
+--- a/drivers/net/wireless/Makefile
++++ b/drivers/net/wireless/Makefile
+@@ -15,6 +15,7 @@ obj-$(CONFIG_WLAN_VENDOR_MEDIATEK) += mediatek/
+ obj-$(CONFIG_WLAN_VENDOR_MICROCHIP) += microchip/
+ obj-$(CONFIG_WLAN_VENDOR_RALINK) += ralink/
+ obj-$(CONFIG_WLAN_VENDOR_REALTEK) += realtek/
++obj-$(CONFIG_WLAN_VENDOR_AICSEMI) += aicsemi/
+ obj-$(CONFIG_WLAN_VENDOR_RSI) += rsi/
+ obj-$(CONFIG_WLAN_VENDOR_ST) += st/
+ obj-$(CONFIG_WLAN_VENDOR_TI) += ti/
+diff --git a/drivers/net/wireless/aicsemi/Kconfig b/drivers/net/wireless/aicsemi/Kconfig
+new file mode 100644
+index 000000000000..77c8a74edf8e
+--- /dev/null
++++ b/drivers/net/wireless/aicsemi/Kconfig
+@@ -0,0 +1,16 @@
++config WLAN_VENDOR_AICSEMI
++	bool "AICSEMI devices"
++	default n
++	help
++	  If you have a wireless card belonging to this class, say Y.
++
++	  Note that the answer to this question doesn't directly affect the
++	  kernel: saying N will just cause the configurator to skip all the
++	  questions about these cards. If you say Y, you will be asked for
++	  your specific card in the following questions.
++
++if WLAN_VENDOR_AICSEMI
++
++source "drivers/net/wireless/aicsemi/aic8800/Kconfig"
++
++endif # WLAN_VENDOR_AICSEMI
+diff --git a/drivers/net/wireless/aicsemi/Makefile b/drivers/net/wireless/aicsemi/Makefile
+new file mode 100644
+index 000000000000..20cdb445d299
+--- /dev/null
++++ b/drivers/net/wireless/aicsemi/Makefile
+@@ -0,0 +1,6 @@
++#
++# Makefile for the Linux Wireless network device drivers for AICSEMI units
++#
++
++obj-$(CONFIG_AIC8800)     	+= aic8800/
++
+diff --git a/drivers/net/wireless/aicsemi/aic8800/Kconfig b/drivers/net/wireless/aicsemi/aic8800/Kconfig
+index 66c20f6d8d2e..08af5824faac 100644
+--- a/drivers/net/wireless/aicsemi/aic8800/Kconfig
++++ b/drivers/net/wireless/aicsemi/aic8800/Kconfig
+@@ -1,18 +1,18 @@
+-config AIC_WLAN_SUPPORT
++config AIC8800
+ 	bool "AIC wireless Support"
+ 	default n
+ 	help
+ 	  This is support for aic wireless chip.
+ 
+ config AIC_FW_PATH
+-	depends on AIC_WLAN_SUPPORT
++	depends on AIC8800
+ 	string "Firmware & config file path"
+ 	default "/vendor/etc/firmware"
+ 	#default "/lib/firmware/aic8800_sdio"
+ 	help
+ 	  Path to the firmware & config file.
+ 
+-if AIC_WLAN_SUPPORT
+-source "drivers/net/wireless/aic8800/aic8800_fdrv/Kconfig"
+-source "drivers/net/wireless/aic8800/aic8800_btlpm/Kconfig"
++if AIC8800
++source "drivers/net/wireless/aicsemi/aic8800/aic8800_fdrv/Kconfig"
++source "drivers/net/wireless/aicsemi/aic8800/aic8800_btlpm/Kconfig"
+ endif
+diff --git a/drivers/net/wireless/aicsemi/aic8800/Makefile b/drivers/net/wireless/aicsemi/aic8800/Makefile
+index cac155948b9e..87bf293f2ac7 100644
+--- a/drivers/net/wireless/aicsemi/aic8800/Makefile
++++ b/drivers/net/wireless/aicsemi/aic8800/Makefile
+@@ -1,10 +1,10 @@
+ CONFIG_AIC8800_BTLPM_SUPPORT := m
+ CONFIG_AIC8800_WLAN_SUPPORT := m
+-CONFIG_AIC_WLAN_SUPPORT := m
++CONFIG_AIC8800 := m
+ 
+ obj-$(CONFIG_AIC8800_BTLPM_SUPPORT) += aic8800_btlpm/
+ obj-$(CONFIG_AIC8800_WLAN_SUPPORT) += aic8800_fdrv/
+-obj-$(CONFIG_AIC_WLAN_SUPPORT) += aic8800_bsp/
++obj-$(CONFIG_AIC8800) += aic8800_bsp/
+ 
+ MAKEFLAGS +=-j$(shell nproc)
+ 
+@@ -22,7 +22,8 @@ export CONFIG_PLATFORM_ROCKCHIP = n
+ export CONFIG_PLATFORM_ROCKCHIP2 = n
+ export CONFIG_PLATFORM_ALLWINNER = n
+ export CONFIG_PLATFORM_AMLOGIC = n
+-export CONFIG_PLATFORM_UBUNTU = y
++export CONFIG_PLATFORM_UBUNTU = n
++export CONFIG_PLATFORM_CVITEK = y
+ 
+ ifeq ($(CONFIG_PLATFORM_ROCKCHIP), y)
+ ARCH = arm64
+@@ -66,6 +67,11 @@ CROSS_COMPILE ?=
+ endif
+ ###########################################
+ 
++ifeq ($(CONFIG_PLATFORM_CVITEK), y)
++$(info ARCH: $(ARCH))
++$(info CROSS_COMPILE: $(CROSS_COMPILE))
++endif
++
+ all: modules
+ modules:
+ 	make -C $(KDIR) M=$(PWD) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) modules
+diff --git a/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/Makefile b/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/Makefile
+index bcccfbdbbfc0..fdde9e63b924 100644
+--- a/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/Makefile
++++ b/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/Makefile
+@@ -70,7 +70,8 @@ CONFIG_PLATFORM_ROCKCHIP2 ?= n
+ CONFIG_PLATFORM_ALLWINNER ?=n
+ CONFIG_PLATFORM_INGENIC_T20 ?= n
+ CONFIG_PLATFORM_AMLOGIC ?= n
+-CONFIG_PLATFORM_UBUNTU ?= y
++CONFIG_PLATFORM_UBUNTU ?= n
++CONFIG_PLATFORM_CVITEK ?= y
+ 
+ ifeq ($(CONFIG_PLATFORM_ROCKCHIP), y)
+ ccflags-$(CONFIG_PLATFORM_ROCKCHIP) += -DCONFIG_PLATFORM_ROCKCHIP
+@@ -116,6 +117,12 @@ MODDESTDIR ?= /lib/modules/$(KVER)/kernel/drivers/net/wireless/
+ ARCH ?= x86_64
+ CROSS_COMPILE ?=
+ endif
++
++ifeq ($(CONFIG_PLATFORM_CVITEK), y)
++$(info ARCH: $(ARCH))
++$(info CROSS_COMPILE: $(CROSS_COMPILE))
++ccflags-$(CONFIG_PLATFORM_CVITEK) += -DCONFIG_PLATFORM_CVITEK
++endif
+ ###########################################
+ 
+ all: modules
+diff --git a/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aicsdio.c b/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aicsdio.c
+index 4a9707c03beb..3f67722dbf60 100644
+--- a/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aicsdio.c
++++ b/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aicsdio.c
+@@ -15,6 +15,7 @@
+ #include <linux/semaphore.h>
+ #include <linux/debugfs.h>
+ #include <linux/kthread.h>
++#include <linux/gpio.h>
+ #include "aicsdio_txrxif.h"
+ #include "aicsdio.h"
+ #include "aic_bsp_driver.h"
+@@ -42,6 +43,11 @@ extern void extern_wifi_set_enable(int is_on);
+ extern void set_power_control_lock(int lock);
+ #endif//for AML
+ 
++#ifdef CONFIG_PLATFORM_CVITEK
++extern int cvi_get_wifi_pwr_on_gpio(void);
++extern int cvi_sdio_rescan(void);
++static int cvi_wifi_power_gpio = -1;
++#endif //CONFIG_PLATFORM_CVITEK
+ 
+ static int aicbsp_platform_power_on(void);
+ static void aicbsp_platform_power_off(void);
+@@ -492,6 +498,28 @@ static int aicbsp_platform_power_on(void)
+             rockchip_wifi_set_carddetect(1);
+ #endif /*CONFIG_PLATFORM_ROCKCHIP2*/
+ 
++#ifdef CONFIG_PLATFORM_CVITEK
++	printk("======== CVITEK WLAN_POWER_ON ========\n");
++	cvi_wifi_power_gpio = cvi_get_wifi_pwr_on_gpio();
++	if (cvi_wifi_power_gpio >= 0) {
++		ret = gpio_request(cvi_wifi_power_gpio, "WLAN_POWER");
++		if (ret < 0) {
++			printk("%s: gpio_request(%d) for WLAN_POWER failed\n",
++				__func__, cvi_wifi_power_gpio);
++			cvi_wifi_power_gpio = -1;
++		}
++	}
++
++	if (cvi_wifi_power_gpio >= 0) {
++		ret = gpio_direction_output(cvi_wifi_power_gpio, 1);
++		if (ret) {
++			printk("%s: WLAN_POWER output high failed!\n", __func__);
++			return -EIO;
++		}
++		mdelay(50);
++	}
++#endif //CONFIG_PLATFORM_CVITEK
++
+ 	sema_init(&aic_chipup_sem, 0);
+ 	ret = aicbsp_reg_sdio_notify(&aic_chipup_sem);
+ 	if (ret) {
+@@ -507,6 +535,12 @@ static int aicbsp_platform_power_on(void)
+ 	sunxi_mmc_rescan_card(aicbsp_bus_index);
+ #endif //CONFIG_PLATFORM_ALLWINNER
+ 
++#ifdef CONFIG_PLATFORM_CVITEK
++	printk("%s,%d: cvi_sdio_rescan\n", __func__, __LINE__);
++	cvi_sdio_rescan();
++	//udelay(1000);
++#endif
++
+ 	if (down_timeout(&aic_chipup_sem, msecs_to_jiffies(2000)) == 0) {
+ 		aicbsp_unreg_sdio_notify();
+ 		if(aicbsp_load_fw_in_fdrv){
+@@ -530,6 +564,15 @@ static int aicbsp_platform_power_on(void)
+ 	rockchip_wifi_power(0);
+ #endif /*CONFIG_PLATFORM_ROCKCHIP2*/
+ 
++#ifdef CONFIG_PLATFORM_CVITEK
++	if (cvi_wifi_power_gpio >= 0) {
++		ret = gpio_direction_output(cvi_wifi_power_gpio, 0);
++		if (ret) {
++			printk("%s: WLAN_POWER output low failed!\n", __func__);
++		}
++	}
++#endif //CONFIG_PLATFORM_CVITEK
++
+ 	return -1;
+ }
+ 
+@@ -558,6 +601,14 @@ static void aicbsp_platform_power_off(void)
+ 	extern_wifi_set_enable(0);
+ #endif
+ 
++#ifdef CONFIG_PLATFORM_CVITEK
++	printk("======== CVITEK WLAN_POWER_OFF ========\n");
++	if (cvi_wifi_power_gpio >= 0) {
++		if(gpio_direction_output(cvi_wifi_power_gpio, 0)) {
++			printk("%s: WLAN_POWER output low failed!\n", __func__);
++		}
++	}
++#endif //CONFIG_PLATFORM_CVITEK
+ 
+ 	sdio_dbg("%s\n", __func__);
+ }
+diff --git a/drivers/net/wireless/aicsemi/aic8800/aic8800_btlpm/Makefile b/drivers/net/wireless/aicsemi/aic8800/aic8800_btlpm/Makefile
+index 6d59301f9741..1672cad43470 100644
+--- a/drivers/net/wireless/aicsemi/aic8800/aic8800_btlpm/Makefile
++++ b/drivers/net/wireless/aicsemi/aic8800/aic8800_btlpm/Makefile
+@@ -9,8 +9,8 @@ CONFIG_PLATFORM_ROCKCHIP ?= n
+ CONFIG_PLATFORM_ROCKCHIP2 ?= n
+ CONFIG_PLATFORM_ALLWINNER ?= n
+ CONFIG_PLATFORM_AMLOGIC ?= n
+-CONFIG_PLATFORM_UBUNTU ?= y
+-
++CONFIG_PLATFORM_UBUNTU ?= n
++CONFIG_PLATFORM_CVITEK ?= y
+ 
+ CONFIG_SUPPORT_LPM ?= n
+ CONFIG_AUTO_PM ?= n
+@@ -63,6 +63,10 @@ ARCH ?= x86_64
+ CROSS_COMPILE ?=
+ endif
+ 
++ifeq ($(CONFIG_PLATFORM_CVITEK), y)
++$(info ARCH: $(ARCH))
++$(info CROSS_COMPILE: $(CROSS_COMPILE))
++endif
+ 
+ all: modules
+ modules:
+diff --git a/drivers/net/wireless/aicsemi/aic8800/aic8800_fdrv/Makefile b/drivers/net/wireless/aicsemi/aic8800/aic8800_fdrv/Makefile
+index 8c10df7e19a4..e38c887965ba 100644
+--- a/drivers/net/wireless/aicsemi/aic8800/aic8800_fdrv/Makefile
++++ b/drivers/net/wireless/aicsemi/aic8800/aic8800_fdrv/Makefile
+@@ -311,7 +311,8 @@ CONFIG_PLATFORM_ROCKCHIP2 ?= n
+ CONFIG_PLATFORM_ALLWINNER ?= n
+ CONFIG_PLATFORM_INGENIC_T20 ?= n
+ CONFIG_PLATFORM_AMLOGIC ?= n
+-CONFIG_PLATFORM_UBUNTU ?= y
++CONFIG_PLATFORM_UBUNTU ?= n
++CONFIG_PLATFORM_CVITEK ?= y
+ 
+ ifeq ($(CONFIG_PLATFORM_ROCKCHIP), y)
+ ARCH := arm64
+@@ -358,8 +359,12 @@ MODDESTDIR ?= /lib/modules/$(KVER)/kernel/drivers/net/wireless/
+ ARCH ?= x86_64
+ CROSS_COMPILE ?=
+ endif
+-###########################################
+ 
++ifeq ($(CONFIG_PLATFORM_CVITEK), y)
++$(info ARCH: $(ARCH))
++$(info CROSS_COMPILE: $(CROSS_COMPILE))
++endif
++###########################################
+ 
+ all: modules
+ modules:
+-- 
+2.39.5
+

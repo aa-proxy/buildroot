@@ -1,0 +1,38 @@
+From a9e5f6f282196706f16805175a1255900d55464f Mon Sep 17 00:00:00 2001
+From: Mariusz Bialonczyk <manio@skyboo.net>
+Date: Fri, 14 Nov 2025 17:49:18 +0100
+Subject: [PATCH] drivers/mtd/nand/raw/cvitek: fix including
+ cvsnfc_common.h
+
+---
+ drivers/mtd/nand/raw/cvitek/cvsnfc_common.c | 2 +-
+ drivers/mtd/nand/raw/cvitek/cvsnfc_common.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mtd/nand/raw/cvitek/cvsnfc_common.c b/drivers/mtd/nand/raw/cvitek/cvsnfc_common.c
+index a6def21a8a42..b45411108b03 100644
+--- a/drivers/mtd/nand/raw/cvitek/cvsnfc_common.c
++++ b/drivers/mtd/nand/raw/cvitek/cvsnfc_common.c
+@@ -1,5 +1,5 @@
+ #include <linux/mtd/nand.h>
+-#include <cvsnfc_common.h>
++#include "cvsnfc_common.h"
+ #include <match_table.h>
+ 
+ /*****************************************************************************/
+diff --git a/drivers/mtd/nand/raw/cvitek/cvsnfc_common.h b/drivers/mtd/nand/raw/cvitek/cvsnfc_common.h
+index e18704f7004e..fa42b3d2e067 100644
+--- a/drivers/mtd/nand/raw/cvitek/cvsnfc_common.h
++++ b/drivers/mtd/nand/raw/cvitek/cvsnfc_common.h
+@@ -3,7 +3,7 @@
+ 
+ /*****************************************************************************/
+ #include <linux/version.h>
+-#include <cvmc_common.h>
++#include "cvmc_common.h"
+ 
+ /*****************************************************************************/
+ #define NAND_PAGE_512B                   0
+-- 
+2.39.5
+

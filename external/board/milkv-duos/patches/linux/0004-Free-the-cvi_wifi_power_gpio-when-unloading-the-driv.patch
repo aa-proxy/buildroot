@@ -1,0 +1,25 @@
+From db93c2e67960d3eef9919edac66bbb7469b02b9d Mon Sep 17 00:00:00 2001
+From: EdwinW <edwin.wallace@live.co.uk>
+Date: Wed, 30 Apr 2025 15:30:30 +0000
+Subject: [PATCH] Free the cvi_wifi_power_gpio when unloading the driver
+ to allow the driver to be reloaded later
+
+---
+ drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aicsdio.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aicsdio.c b/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aicsdio.c
+index 3f67722dbf60..0ba68c5c4695 100644
+--- a/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aicsdio.c
++++ b/drivers/net/wireless/aicsemi/aic8800/aic8800_bsp/aicsdio.c
+@@ -608,6 +608,7 @@ static void aicbsp_platform_power_off(void)
+ 			printk("%s: WLAN_POWER output low failed!\n", __func__);
+ 		}
+ 	}
++	gpio_free(cvi_wifi_power_gpio);
+ #endif //CONFIG_PLATFORM_CVITEK
+ 
+ 	sdio_dbg("%s\n", __func__);
+-- 
+2.39.5
+
