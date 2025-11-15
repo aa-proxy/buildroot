@@ -1,0 +1,64 @@
+From 4969c5051822e593cfe60f2da41b58aa7bd2c828 Mon Sep 17 00:00:00 2001
+From: Mariusz Bialonczyk <manio@skyboo.net>
+Date: Sat, 15 Nov 2025 14:24:55 +0100
+Subject: [PATCH] Add required symlinks for proper compilation
+
+This was handled by Sophgo/MilkV make script.
+Why the files are not directly added there?
+No idea - I am only following the rules...
+---
+ board/cvitek/cvi_board_init.c | 1 +
+ include/cvi_board_memmap.h    | 1 +
+ include/cvipart.h             | 1 +
+ include/cvitek/cvitek.h       | 1 +
+ include/imgs.h                | 1 +
+ 5 files changed, 5 insertions(+)
+ create mode 120000 board/cvitek/cvi_board_init.c
+ create mode 120000 include/cvi_board_memmap.h
+ create mode 120000 include/cvipart.h
+ create mode 120000 include/cvitek/cvitek.h
+ create mode 120000 include/imgs.h
+
+diff --git a/board/cvitek/cvi_board_init.c b/board/cvitek/cvi_board_init.c
+new file mode 120000
+index 000000000000..be426ff4d3e1
+--- /dev/null
++++ b/board/cvitek/cvi_board_init.c
+@@ -0,0 +1 @@
++/app/external/board/milkv-duos/u-boot/cvi_board_init.c
+\ No newline at end of file
+diff --git a/include/cvi_board_memmap.h b/include/cvi_board_memmap.h
+new file mode 120000
+index 000000000000..84ed6702328b
+--- /dev/null
++++ b/include/cvi_board_memmap.h
+@@ -0,0 +1 @@
++/app/buildroot/output/milkv-duos/images/memmap/cvi_board_memmap.h
+\ No newline at end of file
+diff --git a/include/cvipart.h b/include/cvipart.h
+new file mode 120000
+index 000000000000..61ba1c6b80ce
+--- /dev/null
++++ b/include/cvipart.h
+@@ -0,0 +1 @@
++/app/buildroot/output/milkv-duos/images/memmap/cvipart.h
+\ No newline at end of file
+diff --git a/include/cvitek/cvitek.h b/include/cvitek/cvitek.h
+new file mode 120000
+index 000000000000..d98fc0dfb066
+--- /dev/null
++++ b/include/cvitek/cvitek.h
+@@ -0,0 +1 @@
++/app/external/board/milkv-duos/u-boot/cvitek.h
+\ No newline at end of file
+diff --git a/include/imgs.h b/include/imgs.h
+new file mode 120000
+index 000000000000..c57cca6b8e58
+--- /dev/null
++++ b/include/imgs.h
+@@ -0,0 +1 @@
++/app/buildroot/output/milkv-duos/images/memmap/imgs.h
+\ No newline at end of file
+-- 
+2.39.5
+
