@@ -1,0 +1,26 @@
+From 6279d28ef02760cc732d46767d8378ea239ec173 Mon Sep 17 00:00:00 2001
+From: carbon <carbon@milkv.io>
+Date: Mon, 5 Aug 2024 11:16:00 +0800
+Subject: [PATCH] u-boot: support emmc version
+
+Signed-off-by: carbon <carbon@milkv.io>
+---
+ include/configs/cv181x-asic.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/cv181x-asic.h b/include/configs/cv181x-asic.h
+index 703aa7454e4d..fc097d6a1b6e 100644
+--- a/include/configs/cv181x-asic.h
++++ b/include/configs/cv181x-asic.h
+@@ -227,7 +227,7 @@
+ 			    #define ROOTARGSB "ubi.mtd=ROOTFS_B ubi.block=0,0"
+ 			#endif
+ 		#endif /* CONFIG_SKIP_RAMDISK */
+-	#elif defined(CONFIG_SD_BOOT)
++	#elif defined(CONFIG_SD_BOOT) || defined(CONFIG_EMMC_SUPPORT)
+ 		#define ROOTARGS "root=" ROOTFS_DEV " rootwait rw"
+ 	#elif defined(CONFIG_EMMC_SUPPORT)
+ 		#ifdef CONFIG_ROOTFS_RW
+-- 
+2.39.5
+
