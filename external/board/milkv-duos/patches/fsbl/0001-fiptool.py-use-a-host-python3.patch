@@ -1,0 +1,24 @@
+From dc006b034a4c2e868a4a9aec6f9433776747793e Mon Sep 17 00:00:00 2001
+From: Mariusz Bialonczyk <manio@skyboo.net>
+Date: Sun, 16 Nov 2025 19:05:08 +0100
+Subject: [PATCH] fiptool.py: use a host python3
+
+This fixes lack of lzma:
+ModuleNotFoundError: No module named '_lzma'
+---
+ plat/cv181x/fiptool.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/plat/cv181x/fiptool.py b/plat/cv181x/fiptool.py
+index abb842be4fe8..edfc36c1b92f 100755
+--- a/plat/cv181x/fiptool.py
++++ b/plat/cv181x/fiptool.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python3
++#!/usr/bin/python3
+ # PYTHON_ARGCOMPLETE_OK
+ 
+ import sys
+-- 
+2.39.5
+

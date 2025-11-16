@@ -1,0 +1,26 @@
+From 925345e5049b4f18a20038fa4f123cfd2066ea41 Mon Sep 17 00:00:00 2001
+From: Mariusz Bialonczyk <manio@skyboo.net>
+Date: Sun, 16 Nov 2025 19:07:09 +0100
+Subject: [PATCH] make_helpers/fip.mk: adjust OpenSBI monitor path
+
+Cannot be overridden with env variable
+---
+ make_helpers/fip.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/make_helpers/fip.mk b/make_helpers/fip.mk
+index ba2c850b1bdd..3dc90765aca7 100644
+--- a/make_helpers/fip.mk
++++ b/make_helpers/fip.mk
+@@ -9,7 +9,7 @@ CHIP_CONF_PATH = ${BUILD_PLAT}/chip_conf.bin
+ ifeq (${BOOT_CPU},aarch64)
+ MONITOR_PATH = plat/${CHIP_ARCH}/prebuilt/bl31.bin
+ else ifeq (${BOOT_CPU},riscv)
+-MONITOR_PATH = ../opensbi/build/platform/generic/firmware/fw_dynamic.bin
++MONITOR_PATH = ../../images/fw_dynamic.bin
+ endif
+ 
+ ifeq (${ENABLE_BURN_BUTTON},y)
+-- 
+2.39.5
+
