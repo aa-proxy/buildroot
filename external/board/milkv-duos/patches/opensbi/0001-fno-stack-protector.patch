@@ -1,0 +1,11 @@
+--- a/Makefile	2025-10-26 13:19:39.309413146 +0100
++++ b/Makefile	2025-11-15 22:03:01.847235474 +0100
+@@ -226,7 +226,7 @@
+ endif
+ 
+ CFLAGS		=	-g -Wall -Werror -ffreestanding -nostdlib -fno-strict-aliasing -O2
+-CFLAGS		+=	-fno-omit-frame-pointer -fno-optimize-sibling-calls
++CFLAGS		+=	-fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-stack-protector
+ CFLAGS		+=	-mno-save-restore -mstrict-align
+ CFLAGS		+=	-mabi=$(PLATFORM_RISCV_ABI) -march=$(PLATFORM_RISCV_ISA)
+ CFLAGS		+=	-mcmodel=$(PLATFORM_RISCV_CODE_MODEL)
