@@ -27,7 +27,11 @@ else
     # doesn't help, because Buildroot still resolves the path as /app/host-tools.
     # So the tools must be placed directly in the root /app directory.
     if [ "$ARG" = "milkv-duos" ]; then
-        sudo git clone --depth=1 https://github.com/milkv-duo/host-tools.git /app/host-tools
+        if [ ! -d /app/host-tools ]; then
+            sudo git clone --depth=1 https://github.com/milkv-duo/host-tools.git /app/host-tools
+        else
+            echo "Host tools already exists"
+        fi
     fi
 
     cd ${BUILDROOT_DIR}
