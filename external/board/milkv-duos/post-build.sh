@@ -31,7 +31,7 @@ DDR_CFG=ddr3_1866_x16 \
 LOG_LEVEL=2 \
 BLCP_2ND_PATH=../../images/cvirtos.bin \
 LOADER_2ND_PATH=../../images/u-boot.bin \
-make -j4 \
+make -j$(nproc --all) \
 -C ${FSBL_BUILD_DIR} \
 O=${FSBL_BUILD_DIR}/build
 
