@@ -20,6 +20,16 @@ else
     BUILDROOT_DIR=/app/buildroot
     OUTPUT=${BUILDROOT_DIR}/output/${ARG}
     mkdir -p ${OUTPUT}
+
+    # We need to download the host-tools for MilkV.
+    # FIXME: consider using the upstream repository (https://github.com/sophgo/host-tools).
+    # Downloading them into the target output and setting BR2_TOOLCHAIN_EXTERNAL_PATH
+    # doesn't help, because Buildroot still resolves the path as /app/host-tools.
+    # So the tools must be placed directly in the root /app directory.
+    if [ "$ARG" = "milkv-duos" ]; then
+        sudo git clone --depth=1 https://github.com/milkv-duo/host-tools.git /app/host-tools
+    fi
+
     cd ${BUILDROOT_DIR}
     make BR2_EXTERNAL=../external/ O=${OUTPUT} gen_${ARG}_defconfig
     cd ${OUTPUT}
