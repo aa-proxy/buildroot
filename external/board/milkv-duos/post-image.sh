@@ -21,3 +21,7 @@ cp ${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/milkv-duos/u-boot/multi.its .
 ${BUILD_DIR}/uboot*/tools/mkimage -f multi.its -r boot.itb
 mkdir -p rawimages
 cp boot.itb rawimages/boot.sd
+
+# create a logo partition
+mkdir -p output
+python3 /app/tools/image_tool/raw2cimg.py ${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/milkv-duos/bootlogo/logo.jpg ./output $PARTITION_XML
