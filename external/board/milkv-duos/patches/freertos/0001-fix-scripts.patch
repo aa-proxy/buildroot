@@ -1,0 +1,24 @@
+diff --git a/freertos/cvitek/scripts/ParseConfiguration.cmake b/freertos/cvitek/scripts/ParseConfiguration.cmake
+index c6b0426e1..dc8267932 100644
+--- a/cvitek/scripts/ParseConfiguration.cmake
++++ b/cvitek/scripts/ParseConfiguration.cmake
+@@ -1,5 +1,6 @@
+ 
+ function(ParseConfiguration DotConfigFile)
++	return()
+ 	if (NOT EXISTS ${DotConfigFile})
+ 		message(FATAL_ERROR
+ 		"${DotConfigFile} not exist,
+diff --git a/freertos/cvitek/scripts/cv181x_lscript.ld b/freertos/cvitek/scripts/cv181x_lscript.ld
+index 13c5477b8..11e2c8844 100644
+--- a/cvitek/scripts/cv181x_lscript.ld
++++ b/cvitek/scripts/cv181x_lscript.ld
+@@ -9,7 +9,7 @@
+ /* Description : Cortex-A53 Linker Script                          */
+ /*                                                                 */
+ /*******************************************************************/
+-INCLUDE cvi_board_memmap.ld
++INCLUDE /app/buildroot/output/milkv-duos/images/memmap/cvi_board_memmap.ld
+ 
+ _STACK_SIZE = DEFINED(_STACK_SIZE) ? _STACK_SIZE : 0x20000;
+ /* _HEAP_SIZE = DEFINED(_HEAP_SIZE) ? _HEAP_SIZE : 0x1000000; */

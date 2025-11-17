@@ -1,0 +1,36 @@
+diff --git a/freertos/cvitek/driver/CMakeLists.txt b/freertos/cvitek/driver/CMakeLists.txt
+index 353ad3a0b..b175f7995 100644
+--- a/cvitek/driver/CMakeLists.txt
++++ b/cvitek/driver/CMakeLists.txt
+@@ -38,6 +38,7 @@ if (CONFIG_CHIP_ARCH_cv180x STREQUAL "y")
+ add_compile_definitions(__CV180X__)
+ endif()
+ 
++set(CONFIG_FAST_IMAGE_TYPE "0" CACHE STRING "Fast image type")
+ if (CONFIG_FAST_IMAGE_TYPE STRGREATER "0")
+ add_compile_definitions(FAST_IMAGE_ENABLE)
+ endif()
+diff --git a/freertos/cvitek/task/comm/CMakeLists.txt b/freertos/cvitek/task/comm/CMakeLists.txt
+index 8890ed220..0d9795918 100644
+--- a/cvitek/task/comm/CMakeLists.txt
++++ b/cvitek/task/comm/CMakeLists.txt
+@@ -1,5 +1,6 @@
+ file(GLOB _SOURCES "src/${RUN_ARCH}/*.c")
+ 
++set(CONFIG_FAST_IMAGE_TYPE "0" CACHE STRING "Fast image type")
+ if (CONFIG_FAST_IMAGE_TYPE STRGREATER "0")
+ add_compile_definitions(FAST_IMAGE_ENABLE)
+ endif()
+diff --git a/freertos/cvitek/task/main/CMakeLists.txt b/freertos/cvitek/task/main/CMakeLists.txt
+index 800821812..ac614b237 100644
+--- a/cvitek/task/main/CMakeLists.txt
++++ b/cvitek/task/main/CMakeLists.txt
+@@ -23,6 +23,8 @@ if (CHIP STREQUAL "cv1835")
+     set(CVI_TASK_LIBS common isp vip display vcodec)
+     set(EXTRA_LIBS ${EXTRA_LIBS} "${TOP_DIR}/driver/venc/vc/vcodec/codebase/vpuapi/coda9/980_roi_rc_lib/libroirc_aarch64.a")
+ elseif (CHIP STREQUAL "cv181x" OR CHIP STREQUAL "cv180x")
++
++set(CONFIG_FAST_IMAGE_TYPE "0" CACHE STRING "Fast image type")
+ if (CONFIG_FAST_IMAGE_TYPE STRGREATER "0")
+     set(CVI_TASK_LIBS comm isp vi vcodec rgn audio camera)
+ else()

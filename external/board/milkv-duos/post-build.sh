@@ -11,6 +11,10 @@ OUT_MEMMAP_DIR="${BINARIES_DIR}/memmap"
 PARTITION_XML="${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/milkv-duos/partition/partition_sd.xml"
 BUILDROOT_DIR="$(realpath "$BR2_EXTERNAL_AA_PROXY_OS_PATH/..")"
 FSBL_BUILD_DIR="${BUILD_DIR}/fsbl"
+RTOS_BUILD_DIR="${BUILD_DIR}/freertos*"
+
+# copy FreeRTOS output binary to images
+cp ${RTOS_BUILD_DIR}/cvitek/install/bin/cvirtos.bin ${BINARIES_DIR}
 
 # Sophgo FSBL (First Stage Boot Loader)
 # We cannot add this as a package because it is a bootloader/BR2_TARGET_ package

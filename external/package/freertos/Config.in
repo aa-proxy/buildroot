@@ -1,0 +1,2 @@
+config BR2_PACKAGE_FREERTOS
+	bool "FreeRTOS"
