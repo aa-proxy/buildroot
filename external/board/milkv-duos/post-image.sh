@@ -25,3 +25,6 @@ cp boot.itb rawimages/boot.sd
 # create a logo partition
 mkdir -p output
 python3 /app/tools/image_tool/raw2cimg.py ${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/milkv-duos/bootlogo/logo.jpg ./output $PARTITION_XML
+
+# make a final SD card image
+${BASE_DIR}/../../support/scripts/genimage.sh -c $BR2_EXTERNAL_AA_PROXY_OS_PATH/board/milkv-duos/genimage.cfg
