@@ -18,6 +18,8 @@ else
     external/scripts/defconfig_merger.sh ${ARG}
 
     BUILDROOT_DIR=/app/buildroot
+    PATCH_DIR=/app/br-patches
+    STAMP="$BUILDROOT_DIR/.stamp_patched"
     OUTPUT=${BUILDROOT_DIR}/output/${ARG}
     mkdir -p ${OUTPUT}
 
@@ -35,6 +37,21 @@ else
     fi
 
     cd ${BUILDROOT_DIR}
+
+    # Apply buildroot patches in order
+    # Exit if already patched
+    if [ -f "$STAMP" ]; then
+        echo "Patch series already applied, skipping."
+    else
+        for p in $(ls "$PATCH_DIR"/*.patch | sort); do
+            echo "Applying patch $p..."
+            sudo patch -p1 < "$p"
+        done
+        # Create stamp file to mark patches applied
+        sudo touch "$STAMP"
+        echo "All patches applied successfully."
+    fi
+
     make BR2_EXTERNAL=../external/ O=${OUTPUT} gen_${ARG}_defconfig
     cd ${OUTPUT}
     make -j$(nproc --all)

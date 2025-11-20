@@ -1,0 +1,57 @@
+From cbbd3f0bb3d16d4f1270d28b47fcaa9b03c81298 Mon Sep 17 00:00:00 2001
+From: Mariusz Bialonczyk <manio@skyboo.net>
+Date: Mon, 27 Oct 2025 21:15:26 +0100
+Subject: [PATCH] rust: add support for riscv64gc-unknown-linux-musl target
+
+Signed-off-by: Mariusz Bialonczyk <manio@skyboo.net>
+---
+ package/rust-bin/rust-bin.hash | 2 ++
+ package/rustc/Config.in.host   | 6 ++++++
+ utils/update-rust              | 1 +
+ 3 files changed, 9 insertions(+)
+
+diff --git a/package/rust-bin/rust-bin.hash b/package/rust-bin/rust-bin.hash
+index 7f9d2f6339..0c7dd2180c 100644
+--- a/package/rust-bin/rust-bin.hash
++++ b/package/rust-bin/rust-bin.hash
+@@ -57,6 +57,8 @@ sha256  89cf8b30e0fae601e0603e41d5eaf58881729208cac83636eff89b94724b7112  rust-s
+ sha256  1030e71f755692c3429bb16829cca776c1ac372abbce3001b04d4e46b1e4f32f  rust-std-1.88.0-powerpc64le-unknown-linux-gnu.tar.xz
+ # From https://static.rust-lang.org/dist/rust-std-1.88.0-riscv64gc-unknown-linux-gnu.tar.xz.sha256
+ sha256  d446fc0d8e4ce985c2d21aa2adb6ec9fce8f7ebde85655200abd71e142b9a981  rust-std-1.88.0-riscv64gc-unknown-linux-gnu.tar.xz
++# From https://static.rust-lang.org/dist/rust-std-1.88.0-riscv64gc-unknown-linux-musl.tar.xz.sha256
++sha256  5ddf0fe9b406c210dd460c4740cf8f530299bc9ffcc869613ade096f8ecb7f7e  rust-std-1.88.0-riscv64gc-unknown-linux-musl.tar.xz
+ # From https://static.rust-lang.org/dist/rust-std-1.88.0-s390x-unknown-linux-gnu.tar.xz.sha256
+ sha256  df3144f87a22d606abea4dcfe88369fcd499ef2fc748724b47941308ae259a5d  rust-std-1.88.0-s390x-unknown-linux-gnu.tar.xz
+ # From https://static.rust-lang.org/dist/rust-std-1.88.0-sparc64-unknown-linux-gnu.tar.xz.sha256
+diff --git a/package/rustc/Config.in.host b/package/rustc/Config.in.host
+index c3e9a13f39..b57eb1aece 100644
+--- a/package/rustc/Config.in.host
++++ b/package/rustc/Config.in.host
+@@ -92,6 +92,12 @@ config BR2_PACKAGE_HOST_RUSTC_TARGET_TIER2_PLATFORMS
+ 	default y if BR2_x86_i586 && BR2_TOOLCHAIN_USES_MUSL
+ 	# i686-unknown-linux-musl
+ 	default y if (BR2_x86_i686 || BR2_x86_pentiumpro || BR2_X86_CPU_HAS_MMX) && BR2_TOOLCHAIN_USES_MUSL
++	# riscv64gc-unknown-linux-musl
++	# "g" stands for imafd, and we also need "c".
++	default y if BR2_RISCV_64 && BR2_RISCV_ISA_RVI && BR2_RISCV_ISA_RVM && \
++			BR2_RISCV_ISA_RVA && BR2_RISCV_ISA_RVF && \
++			BR2_RISCV_ISA_RVD && BR2_RISCV_ISA_RVC && \
++			BR2_TOOLCHAIN_USES_MUSL
+ 	# sparc64-unknown-linux-gnu
+ 	default y if BR2_sparc64 && BR2_TOOLCHAIN_USES_GLIBC
+ 
+diff --git a/utils/update-rust b/utils/update-rust
+index 7db3feff9c..18d7b1d1f8 100755
+--- a/utils/update-rust
++++ b/utils/update-rust
+@@ -52,6 +52,7 @@ RUST_TARGETS = [
+     "powerpc64-unknown-linux-gnu",
+     "powerpc64le-unknown-linux-gnu",
+     "riscv64gc-unknown-linux-gnu",
++    "riscv64gc-unknown-linux-musl",
+     "s390x-unknown-linux-gnu",
+     "sparc64-unknown-linux-gnu",
+     "x86_64-unknown-linux-gnu",
+-- 
+2.39.5
+

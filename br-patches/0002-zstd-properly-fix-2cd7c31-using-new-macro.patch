@@ -1,0 +1,27 @@
+From 1bcaca1c52cffe35c19be42b590d3a5ce37a3f45 Mon Sep 17 00:00:00 2001
+From: Mariusz Bialonczyk <manio@skyboo.net>
+Date: Thu, 20 Nov 2025 12:47:06 +0100
+Subject: [PATCH] zstd: properly fix 2cd7c31 using new macro
+
+This commit replaces the temporary workaround with a proper fix using
+the new macro added here:
+https://github.com/facebook/zstd/pull/4312/commits/fd5498a1793f26b3a6995009449e1216a8c90dd0
+---
+ buildroot/package/zstd/zstd.mk | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/buildroot/package/zstd/zstd.mk b/buildroot/package/zstd/zstd.mk
+index 70da1e735475..c770604a3a3e 100644
+--- a/package/zstd/zstd.mk
++++ b/package/zstd/zstd.mk
+@@ -40,6 +40,7 @@ endif
+ 
+ # zstd will append -O3 after $(CFLAGS), use MOREFLAGS to override again
+ ZSTD_OPTS += MOREFLAGS="$(TARGET_OPTIMIZATION)"
++ZSTD_OPTS += CPPFLAGS=-DZSTD_USE_C90_QSORT
+ 
+ ZSTD_BUILD_LIBS_BASENAMES = libzstd.pc
+ ifeq ($(BR2_STATIC_LIBS),y)
+-- 
+2.39.5
+

@@ -1,0 +1,34 @@
+From 44d44a40a04987e4c5c01e9a660c578fbc15813d Mon Sep 17 00:00:00 2001
+From: carbon <carbon@milkv.io>
+Date: Tue, 20 May 2025 11:41:18 +0800
+Subject: [PATCH] disable -ztext for global LDFLAGS
+
+The new buildroot global -ztext option will cause
+gdb to fail to compile in sophgo's riscv musl toolchain.
+We temporarily disable this option.
+
+Signed-off-by: carbon <carbon@milkv.io>
+---
+ buildroot/package/Makefile.in | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/buildroot/package/Makefile.in b/buildroot/package/Makefile.in
+index 829636900ba9..e965b72cf6a5 100644
+--- a/package/Makefile.in
++++ b/package/Makefile.in
+@@ -170,9 +170,9 @@ TARGET_LDFLAGS = $(call qstrip,$(BR2_TARGET_LDFLAGS))
+ # (like scons, for gpsd) will reorder and/or drop LDFLAGS, causing a lone
+ # "-z" to be passed and the "text" keyword to be dropped otherwise. Both
+ # gcc and ld supports that, so it probably won't cause us problems.
+-ifeq ($(BR2_TOOLCHAIN_USES_MUSL):$(BR2_STATIC_LIBS),y:)
+-TARGET_LDFLAGS += -ztext
+-endif
++#ifeq ($(BR2_TOOLCHAIN_USES_MUSL):$(BR2_STATIC_LIBS),y:)
++#TARGET_LDFLAGS += -ztext
++#endif
+ 
+ # By design, _FORTIFY_SOURCE requires gcc optimization to be enabled.
+ # Therefore, we need to pass _FORTIFY_SOURCE and the optimization level
+-- 
+2.39.5
+
