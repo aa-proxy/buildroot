@@ -1,0 +1,12 @@
+diff --git a/package/pkg-generic.mk b/package/pkg-generic.mk
+index cf55101265..81f6fc40f5 100644
+--- a/package/pkg-generic.mk
++++ b/package/pkg-generic.mk
+@@ -385,6 +385,7 @@ $(BUILD_DIR)/%/.stamp_installed:
+ 	@$(call pkg_size_after,$(HOST_DIR),-host)
+ 	@$(call check_bin_arch)
+ 	$(Q)touch $@
++	rm -Rf $(@D)
+ 
+ # Remove package sources
+ $(BUILD_DIR)/%/.stamp_dircleaned:
