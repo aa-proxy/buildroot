@@ -31,6 +31,7 @@ else
     if [ "$ARG" = "milkv-duos" ]; then
         if [ ! -d /app/host-tools ]; then
             sudo git clone --depth=1 https://github.com/milkv-duo/host-tools.git /app/host-tools
+            sudo rm -rf /app/host-tools/.git
         else
             echo "Host tools already exists"
         fi

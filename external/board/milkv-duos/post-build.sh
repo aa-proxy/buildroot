@@ -23,6 +23,7 @@ cp ${RTOS_BUILD_DIR}/cvitek/install/bin/cvirtos.bin ${BINARIES_DIR}
 rm -rf ${FSBL_BUILD_DIR}
 git clone https://github.com/sophgo/fsbl.git ${FSBL_BUILD_DIR}
 cd ${FSBL_BUILD_DIR}
+rm -rf .git
 patch -p1 < ${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/milkv-duos/patches/fsbl/0001-fiptool.py-use-a-host-python3.patch
 patch -p1 < ${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/milkv-duos/patches/fsbl/0002-make_helpers-fip.mk-adjust-OpenSBI-monitor-path.patch
 mkdir build
