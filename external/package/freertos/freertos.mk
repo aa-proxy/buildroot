@@ -5,7 +5,9 @@ define FREERTOS_BUILD_CMDS
     # we need to clone subdirectories as well besides the main, details:
     # https://github.com/milkv-duo/duo-buildroot-sdk-v2/blob/main/.version/version.md
     git clone -b sg200x-dev --single-branch --depth=1 https://github.com/sophgo/FreeRTOS-Kernel.git $(@D)/Source || echo "dir exists"
+    rm -rf $(@D)/Source/.git
     git clone -b sg200x-dev --single-branch --depth=1 https://github.com/sophgo/Lab-Project-FreeRTOS-POSIX.git $(@D)/Source/FreeRTOS-Plus-POSIX || echo "dir exists"
+    rm -rf $(@D)/Source/FreeRTOS-Plus-POSIX/.git
 
     cd $(@D)/cvitek && \
     env CONFIG_FAST_IMAGE_TYPE=0 DDR_64MB_SIZE=n PATH="$$PATH:/app/host-tools/gcc/riscv64-elf-x86_64/bin" \
