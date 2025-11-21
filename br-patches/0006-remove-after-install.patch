@@ -1,13 +1,13 @@
 diff --git a/package/pkg-generic.mk b/package/pkg-generic.mk
-index cf55101265..708d10388f 100644
+index cf55101265..f2909df712 100644
 --- a/package/pkg-generic.mk
 +++ b/package/pkg-generic.mk
 @@ -385,6 +385,11 @@ $(BUILD_DIR)/%/.stamp_installed:
  	@$(call pkg_size_after,$(HOST_DIR),-host)
  	@$(call check_bin_arch)
  	$(Q)touch $@
-+	@if echo "$(@D)" | grep -q "freertos"; then \
-+	    echo "skip rm (freertos)"; \
++	@if echo "$(@D)" | grep -Eq "freertos|uboot"; then \
++	    echo "skip rm (freertos or uboot)"; \
 +	else \
 +	    rm -Rf "$(@D)"; \
 +	fi
