@@ -28,6 +28,8 @@ RUN apt-get update && \
     libfl-dev \
     wireless-regdb \
     device-tree-compiler \
+    cmake \
+    ninja-build \
     sudo && \
 # Create user and group to not use root
     groupadd --gid ${GID} ${USERNAME} && \
