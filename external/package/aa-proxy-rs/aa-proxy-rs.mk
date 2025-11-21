@@ -23,28 +23,6 @@ AA_PROXY_RS_CARGO_ENV = \
 ifeq ($(findstring milkv-duos,$(CONFIG_DIR)),milkv-duos)
 # Add our own toolchain to path
 AA_PROXY_RS_CARGO_ENV += PATH=/app/buildroot/output/milkv-duos/build/riscv/bin:$(BR_PATH)
-
-# Prepare target build environment with custom toolchain:
-# - Remove references to the system toolchain to ensure the build
-#   uses our own toolchain paths.
-# - Set all relevant compiler and linker flags (CFLAGS, CXXFLAGS, LDFLAGS, etc.)
-#   for both host and target builds.
-TARGET_CONFIGURE_OPTS = \
-        $(TARGET_MAKE_ENV) \
-        CPPFLAGS_FOR_BUILD="$(HOST_CPPFLAGS)" \
-        CFLAGS_FOR_BUILD="$(HOST_CFLAGS)" \
-        CXXFLAGS_FOR_BUILD="$(HOST_CXXFLAGS)" \
-        LDFLAGS_FOR_BUILD="$(HOST_LDFLAGS)" \
-        FCFLAGS_FOR_BUILD="$(HOST_FCFLAGS)" \
-        CPPFLAGS="$(TARGET_CPPFLAGS)" \
-        CFLAGS="$(TARGET_CFLAGS)" \
-        CXXFLAGS="$(TARGET_CXXFLAGS)" \
-        LDFLAGS="$(TARGET_LDFLAGS)" \
-        FCFLAGS="$(TARGET_FCFLAGS)" \
-        FFLAGS="$(TARGET_FCFLAGS)" \
-        PKG_CONFIG="$(PKG_CONFIG_HOST_BINARY)" \
-        STAGING_DIR="$(STAGING_DIR)" \
-        INTLTOOL_PERL=$(PERL)
 endif
 
 # default config file generator
