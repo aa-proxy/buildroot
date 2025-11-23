@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -u
 set -e
@@ -40,3 +40,21 @@ make -j$(nproc --all) \
 O=${FSBL_BUILD_DIR}/build
 
 cp ${FSBL_BUILD_DIR}/build/fip.bin ${BINARIES_DIR}
+
+# fetching AIC firmware (until we use an AIC package)
+OUTDIR="$TARGET_DIR/lib/firmware/aic8800_sdio"
+BASE_URL="https://github.com/milkv-duo/duo-buildroot-sdk-v2/raw/refs/heads/main/device/generic/rootfs_overlay/duos/mnt/system/firmware/aic8800"
+FILES=(
+    "aic_userconfig_8800d80.txt"
+    "fmacfw_8800d80_u02.bin"
+    "fmacfwbt_8800d80_u02.bin"
+    "fw_adid_8800d80_u02.bin"
+    "fw_patch_8800d80_u02.bin"
+    "fw_patch_table_8800d80_u02.bin"
+    "lmacfw_rf_8800d80_u02.bin"
+)
+mkdir -p "$OUTDIR"
+for f in "${FILES[@]}"; do
+    echo "Downloading $f..."
+    wget -O "$OUTDIR/$f" "$BASE_URL/$f"
+done
