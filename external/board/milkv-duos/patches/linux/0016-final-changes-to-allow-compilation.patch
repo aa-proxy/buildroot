@@ -1,0 +1,110 @@
+From fff781856ff30fcb0ae320277793b2a088cffe97 Mon Sep 17 00:00:00 2001
+From: Mariusz Bialonczyk <manio@skyboo.net>
+Date: Sat, 8 Nov 2025 14:59:42 +0100
+Subject: [PATCH] final changes to allow compilation
+
+---
+ net/bluetooth/bnep/core.c  |  2 +-
+ net/bluetooth/cmtp/core.c  |  2 +-
+ net/bluetooth/hci_sysfs.c  | 15 ++++++++++++++-
+ net/bluetooth/hidp/core.c  |  2 +-
+ net/bluetooth/rfcomm/tty.c |  4 ++--
+ 5 files changed, 19 insertions(+), 6 deletions(-)
+
+diff --git a/net/bluetooth/bnep/core.c b/net/bluetooth/bnep/core.c
+index ca46441d0657..9616cb50811f 100644
+--- a/net/bluetooth/bnep/core.c
++++ b/net/bluetooth/bnep/core.c
+@@ -536,7 +536,7 @@ static int bnep_session(void *arg)
+ 
+ 	up_write(&bnep_session_sem);
+ 	free_netdev(dev);
+-	module_put_and_kthread_exit(0);
++	module_put_and_exit(0);
+ 	return 0;
+ }
+ 
+diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
+index 90d130588a3e..83eb84e8e688 100644
+--- a/net/bluetooth/cmtp/core.c
++++ b/net/bluetooth/cmtp/core.c
+@@ -323,7 +323,7 @@ static int cmtp_session(void *arg)
+ 	up_write(&cmtp_session_sem);
+ 
+ 	kfree(session);
+-	module_put_and_kthread_exit(0);
++	module_put_and_exit(0);
+ 	return 0;
+ }
+ 
+diff --git a/net/bluetooth/hci_sysfs.c b/net/bluetooth/hci_sysfs.c
+index cc7d4a8ed8ce..8bc411c02c74 100644
+--- a/net/bluetooth/hci_sysfs.c
++++ b/net/bluetooth/hci_sysfs.c
+@@ -47,6 +47,18 @@ void hci_conn_add_sysfs(struct hci_conn *conn)
+ 		bt_dev_err(hdev, "failed to register connection device");
+ }
+ 
++ 
++/*
++ * The rfcomm tty device will possibly retain even when conn
++ * is down, and sysfs doesn't support move zombie device,
++ * so we should move the device before conn device is destroyed.
++ */
++static int __match_tty(struct device *dev, void *data)
++{
++       return !strncmp(dev_name(dev), "rfcomm", 6);
++}
++
++
+ void hci_conn_del_sysfs(struct hci_conn *conn)
+ {
+ 	struct hci_dev *hdev = conn->hdev;
+@@ -67,7 +79,8 @@ void hci_conn_del_sysfs(struct hci_conn *conn)
+ 	while (1) {
+ 		struct device *dev;
+ 
+-		dev = device_find_any_child(&conn->dev);
++		dev = device_find_child(&conn->dev, NULL, __match_tty);
++
+ 		if (!dev)
+ 			break;
+ 		device_move(dev, NULL, DPM_ORDER_DEV_LAST);
+diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
+index 8ff45fb6f700..021ab957a5c4 100644
+--- a/net/bluetooth/hidp/core.c
++++ b/net/bluetooth/hidp/core.c
+@@ -1305,7 +1305,7 @@ static int hidp_session_thread(void *arg)
+ 	l2cap_unregister_user(session->conn, &session->user);
+ 	hidp_session_put(session);
+ 
+-	module_put_and_kthread_exit(0);
++	module_put_and_exit(0);
+ 	return 0;
+ }
+ 
+diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
+index ebd78fdbd6e8..0a3ba2542dcc 100644
+--- a/net/bluetooth/rfcomm/tty.c
++++ b/net/bluetooth/rfcomm/tty.c
+@@ -809,7 +809,7 @@ static int rfcomm_tty_write(struct tty_struct *tty, const unsigned char *buf, in
+ 	return sent;
+ }
+ 
+-static unsigned int rfcomm_tty_write_room(struct tty_struct *tty)
++static int rfcomm_tty_write_room(struct tty_struct *tty)
+ {
+ 	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
+ 	int room = 0;
+@@ -1012,7 +1012,7 @@ static void rfcomm_tty_unthrottle(struct tty_struct *tty)
+ 	rfcomm_dlc_unthrottle(dev->dlc);
+ }
+ 
+-static unsigned int rfcomm_tty_chars_in_buffer(struct tty_struct *tty)
++static int rfcomm_tty_chars_in_buffer(struct tty_struct *tty)
+ {
+ 	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
+ 
+-- 
+2.39.5
+

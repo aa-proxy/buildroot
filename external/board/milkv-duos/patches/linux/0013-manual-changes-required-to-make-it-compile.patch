@@ -1,0 +1,92 @@
+From a423e66f2d2222e595e1235f804e101119bdd32c Mon Sep 17 00:00:00 2001
+From: Mariusz Bialonczyk <manio@skyboo.net>
+Date: Fri, 7 Nov 2025 21:09:59 +0100
+Subject: [PATCH] manual changes required to make it compile
+
+---
+ net/bluetooth/bnep/core.c |  2 +-
+ net/bluetooth/cmtp/core.c |  2 +-
+ net/bluetooth/hci_sysfs.c | 13 ++++++++++++-
+ net/bluetooth/hidp/core.c |  2 +-
+ 4 files changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/net/bluetooth/bnep/core.c b/net/bluetooth/bnep/core.c
+index 0eaa47ae6e99..d05beafd2952 100644
+--- a/net/bluetooth/bnep/core.c
++++ b/net/bluetooth/bnep/core.c
+@@ -536,7 +536,7 @@ static int bnep_session(void *arg)
+ 
+ 	up_write(&bnep_session_sem);
+ 	free_netdev(dev);
+-	module_put_and_kthread_exit(0);
++	module_put_and_exit(0);
+ 	return 0;
+ }
+ 
+diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
+index 90d130588a3e..83eb84e8e688 100644
+--- a/net/bluetooth/cmtp/core.c
++++ b/net/bluetooth/cmtp/core.c
+@@ -323,7 +323,7 @@ static int cmtp_session(void *arg)
+ 	up_write(&cmtp_session_sem);
+ 
+ 	kfree(session);
+-	module_put_and_kthread_exit(0);
++	module_put_and_exit(0);
+ 	return 0;
+ }
+ 
+diff --git a/net/bluetooth/hci_sysfs.c b/net/bluetooth/hci_sysfs.c
+index 1b4d81ffb4b5..a81c036e5220 100644
+--- a/net/bluetooth/hci_sysfs.c
++++ b/net/bluetooth/hci_sysfs.c
+@@ -14,6 +14,16 @@ static void bt_link_release(struct device *dev)
+ 	kfree(conn);
+ }
+ 
++/*
++ * The rfcomm tty device will possibly retain even when conn
++ * is down, and sysfs doesn't support move zombie device,
++ * so we should move the device before conn device is destroyed.
++ */
++static int __match_tty(struct device *dev, void *data)
++{
++       return !strncmp(dev_name(dev), "rfcomm", 6);
++}
++
+ static const struct device_type bt_link = {
+ 	.name    = "link",
+ 	.release = bt_link_release,
+@@ -47,6 +57,7 @@ void hci_conn_add_sysfs(struct hci_conn *conn)
+ 		bt_dev_err(hdev, "failed to register connection device");
+ }
+ 
++
+ void hci_conn_del_sysfs(struct hci_conn *conn)
+ {
+ 	struct hci_dev *hdev = conn->hdev;
+@@ -67,7 +78,7 @@ void hci_conn_del_sysfs(struct hci_conn *conn)
+ 	while (1) {
+ 		struct device *dev;
+ 
+-		dev = device_find_any_child(&conn->dev);
++		dev = device_find_child(&conn->dev, NULL, __match_tty);
+ 		if (!dev)
+ 			break;
+ 		device_move(dev, NULL, DPM_ORDER_DEV_LAST);
+diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
+index 3ff870599eb7..b946a6379433 100644
+--- a/net/bluetooth/hidp/core.c
++++ b/net/bluetooth/hidp/core.c
+@@ -1305,7 +1305,7 @@ static int hidp_session_thread(void *arg)
+ 	l2cap_unregister_user(session->conn, &session->user);
+ 	hidp_session_put(session);
+ 
+-	module_put_and_kthread_exit(0);
++	module_put_and_exit(0);
+ 	return 0;
+ }
+ 
+-- 
+2.39.5
+
