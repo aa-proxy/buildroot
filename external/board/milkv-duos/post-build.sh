@@ -13,6 +13,8 @@ BUILDROOT_DIR="$(realpath "$BR2_EXTERNAL_AA_PROXY_OS_PATH/..")"
 FSBL_BUILD_DIR="${BUILD_DIR}/fsbl"
 RTOS_BUILD_DIR="${BUILD_DIR}/freertos*"
 
+${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/common/generate-issue.sh
+
 # copy FreeRTOS output binary to images
 cp ${RTOS_BUILD_DIR}/cvitek/install/bin/cvirtos.bin ${BINARIES_DIR}
 
