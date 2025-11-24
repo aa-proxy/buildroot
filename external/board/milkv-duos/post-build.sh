@@ -45,14 +45,22 @@ cp ${FSBL_BUILD_DIR}/build/fip.bin ${BINARIES_DIR}
 
 # fetching AIC firmware (until we use an AIC package)
 OUTDIR="$TARGET_DIR/lib/firmware/aic8800_sdio"
-BASE_URL="https://github.com/milkv-duo/duo-buildroot-sdk-v2/raw/refs/heads/main/device/generic/rootfs_overlay/duos/mnt/system/firmware/aic8800"
+BASE_URL="https://github.com/radxa-pkg/aic8800/raw/451a1c8f14dad821034017ccb902eaf0a2b8c2ee/src/SDIO/driver_fw/fw/aic8800D80"
 FILES=(
+    "aic_powerlimit_8800d80.txt"
     "aic_userconfig_8800d80.txt"
+    "fmacfw_8800d80_h_u02.bin"
+    "fmacfw_8800d80_h_u02_ipc.bin"
     "fmacfw_8800d80_u02.bin"
+    "fmacfw_8800d80_u02_ipc.bin"
+    "fmacfwbt_8800d80_h_u02.bin"
     "fmacfwbt_8800d80_u02.bin"
     "fw_adid_8800d80_u02.bin"
     "fw_patch_8800d80_u02.bin"
+    "fw_patch_8800d80_u02_ext0.bin"
+    "fw_patch_8800d80_u04.bin"
     "fw_patch_table_8800d80_u02.bin"
+    "fw_patch_table_8800d80_u04.bin"
     "lmacfw_rf_8800d80_u02.bin"
 )
 mkdir -p "$OUTDIR"
