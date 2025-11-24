@@ -1,6 +1,5 @@
 DUO_PINMUX_VERSION = 1.0.0
 DUO_PINMUX_SITE = $(call github,milkv-duo,duo-pinmux,$(DUO_PINMUX_VERSION))
-DUO_PINMUX_INSTALL_STAGING = YES
 
 ifeq ($(BR2_PACKAGE_DUO_PINMUX_DUO),y)
     DUO_SRC_DIR = duo
