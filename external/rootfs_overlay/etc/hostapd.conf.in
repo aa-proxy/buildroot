@@ -11,7 +11,8 @@ channel={{CHANNEL}}
 auth_algs=1
 wpa=2
 wpa_key_mgmt=WPA-PSK
-rsn_pairwise=CCMP
+wpa_pairwise=TKIP
+#rsn_pairwise=CCMP
 
 ssid={{SSID}}
 
