@@ -1,0 +1,29 @@
+From e2b137795b9ec7ffbd6caf8d80b591584b56edba Mon Sep 17 00:00:00 2001
+From: Mariusz Bialonczyk <manio@skyboo.net>
+Date: Tue, 25 Nov 2025 10:22:59 +0100
+Subject: [PATCH] kernel: always mount root partition as `ro`
+
+---
+ include/configs/cv181x-asic.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/configs/cv181x-asic.h b/include/configs/cv181x-asic.h
+index 027fd24d022c..e9ae78e9ea23 100644
+--- a/include/configs/cv181x-asic.h
++++ b/include/configs/cv181x-asic.h
+@@ -228,10 +228,10 @@
+ 			#endif
+ 		#endif /* CONFIG_SKIP_RAMDISK */
+ 	#elif defined(CONFIG_SD_BOOT) || defined(CONFIG_EMMC_SUPPORT)
+-		#define ROOTARGS "root=" ROOTFS_DEV " rootwait rw"
++		#define ROOTARGS "root=" ROOTFS_DEV " rootwait ro"
+ 	#elif defined(CONFIG_EMMC_SUPPORT)
+ 		#ifdef CONFIG_ROOTFS_RW
+-			#define ROOTARGS "rootfstype=ext4 rootwait rw root=" ROOTFS_DEV
++			#define ROOTARGS "rootfstype=ext4 rootwait ro root=" ROOTFS_DEV
+ 		#else
+ 			#define ROOTARGS "rootfstype=squashfs rootwait ro root=" ROOTFS_DEV
+ 		#endif
+-- 
+2.39.5
+

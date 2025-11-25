@@ -1,0 +1,25 @@
+From ae07c5c09d240e3b72a76ae4b29e2fc0694963eb Mon Sep 17 00:00:00 2001
+From: Mariusz Bialonczyk <manio@skyboo.net>
+Date: Tue, 25 Nov 2025 10:20:43 +0100
+Subject: [PATCH] kernel: override init
+
+---
+ include/configs/cv181x-asic.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/cv181x-asic.h b/include/configs/cv181x-asic.h
+index fc097d6a1b6e..027fd24d022c 100644
+--- a/include/configs/cv181x-asic.h
++++ b/include/configs/cv181x-asic.h
+@@ -258,7 +258,7 @@
+ 		#define EARLYCON_RELEASE   " "
+ 	#endif
+ 
+-	#define OTHERBOOTARGS   "earlycon=sbi riscv.fwsz="  __stringify(CVIMMAP_OPENSBI_SIZE) " " \
++	#define OTHERBOOTARGS   "init=/etc/overlay_init earlycon=sbi riscv.fwsz="  __stringify(CVIMMAP_OPENSBI_SIZE) " " \
+ 		EARLYCON_RELEASE CONSOLE_LOGLEVEL
+ 
+ 	/* config mtdids */
+-- 
+2.39.5
+
