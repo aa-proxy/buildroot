@@ -6,7 +6,7 @@ index cf55101265..f2909df712 100644
  	@$(call pkg_size_after,$(HOST_DIR),-host)
  	@$(call check_bin_arch)
  	$(Q)touch $@
-+	@if echo "$(@D)" | grep -Eq "freertos|uboot"; then \
++	@if echo "$(@D)" | grep -Eq "freertos|uboot|linux-custom"; then \
 +	    echo "skip rm (freertos or uboot)"; \
 +	else \
 +	    rm -Rf "$(@D)"; \
