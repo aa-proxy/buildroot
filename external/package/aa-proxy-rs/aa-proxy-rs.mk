@@ -1,8 +1,4 @@
-ifeq ($(findstring milkv-duos,$(CONFIG_DIR)),milkv-duos)
-AA_PROXY_RS_VERSION = musl-riscv
-else
 AA_PROXY_RS_VERSION = main
-endif
 AA_PROXY_RS_SITE = https://github.com/aa-proxy/aa-proxy-rs.git
 AA_PROXY_RS_SITE_METHOD = git
 
