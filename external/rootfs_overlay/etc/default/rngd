@@ -1,1 +1,0 @@
-DAEMON_ARGS="--include=hwrng --exclude=rndr --exclude=jitter --exclude=namedpipe"
