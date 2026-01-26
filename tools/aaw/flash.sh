@@ -13,7 +13,7 @@ if ! command_exists "bc"; then
 fi
 
 wait_for_device() {
-  while ! lsusb 2>/dev/null | grep "2207:110c" -q; do
+  while ! lsusb 2>/dev/null | grep "2207:110" -q; do
     sleep 1
   done
 }

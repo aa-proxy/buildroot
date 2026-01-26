@@ -1,6 +1,20 @@
 config BR2_PACKAGE_RKWIFIBT
-	bool "Rockchip Bluetooth and Wi-Fi firmware"
+	bool "Rockchip Bluetooth and Wi-Fi support"
 
 config BR2_PACKAGE_RKWIFIBT_RTL8733BS
-	bool "Realtek RTL8733BS firmware"
+	bool "Realtek RTL8733BS support"
 	depends on BR2_PACKAGE_RKWIFIBT
+
+config BR2_PACKAGE_RKWIFIBT_AIC8800
+	bool "AIC8800 support"
+	depends on BR2_PACKAGE_RKWIFIBT
+
+config BR2_PACKAGE_RKWIFIBT_BT_UART_DEV
+	string "Bluetooth UART dev"
+	depends on BR2_PACKAGE_RKWIFIBT
+	default "ttyS0"
+
+config BR2_PACKAGE_RKWIFIBT_BT_UART_BAUDRATE
+	string "Bluetooth UART baudrate"
+	depends on BR2_PACKAGE_RKWIFIBT
+	default "115200"

@@ -13,15 +13,14 @@ endef
 define UBOOT_POST_BUILD_HOOKS_ROCKCHIP
 	cd $(@D) && ./make.sh && ./make.sh --spl
 	$(@D)/tools/mkenvimage -s 0x20000 -p 0x0 -o $(@D)/env.img $(BR2_TARGET_UBOOT_ROCKCHIP_ENV_FILE)
-	$(@D)/tools/mkenvimage -r -s 0x20000 -p 0x0 -o $(@D)/env_r.img $(BR2_TARGET_UBOOT_ROCKCHIP_ENV_FILE)
 endef
 
 define UBOOT_POST_INSTALL_IMAGES_HOOKS_ROCKCHIP
 	cp -dpf $(@D)/*_download_*.bin $(BINARIES_DIR)/download.bin
 	cp -dpf $(@D)/*_idblock_*.img $(BINARIES_DIR)/idblock.img
 	cp -dpf $(@D)/uboot.img $(BINARIES_DIR)/
-	cp -dpf $(@D)/env.img $(BINARIES_DIR)/
-	cp -dpf $(@D)/env_r.img $(BINARIES_DIR)/
+	cp -dpf $(@D)/env.img $(BINARIES_DIR)/env.img
+	cp -dpf $(@D)/env.img $(BINARIES_DIR)/env_r.img
 endef
 
 UBOOT_EXTRA_DOWNLOADS += https://github.com/cpebit/rkbin/archive/$(RKBIN_VERSION)/$(RKBIN_ARCHIVE)
