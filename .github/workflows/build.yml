@@ -26,9 +26,9 @@ jobs:
           echo "Building board: ${{ matrix.board }}"
           CONTAINER_ENGINE=docker ./docker-dev.sh "${{ matrix.board }}"
           IMAGE_DIR=buildroot/output/${{ matrix.board }}/images
-          if [[ "${{ matrix.board }}" == "aaw2b" ]]; then
+          if [[ "${{ matrix.board }}" == aaw* ]]; then
             TAR_NAME=images/${{ matrix.board }}-images.tar.xz
-            echo "Compressing entire images directory for aaw2b..."
+            echo "Compressing entire images directory for aaw..."
             tar -cJf "$TAR_NAME" -C "$IMAGE_DIR" .
           else
             IMG="$IMAGE_DIR/sdcard.img"
