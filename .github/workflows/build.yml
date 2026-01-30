@@ -40,11 +40,19 @@ jobs:
             fi
           fi
 
-      - name: Upload Artifact for ${{ matrix.board }}
+      - name: Upload AAW artifact
+        if: startsWith(matrix.board, 'aaw')
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.board }}-images
+          path: images/${{ matrix.board }}-images.tar.xz
+
+      - name: Upload SD-card artifact
+        if: ${{ !startsWith(matrix.board, 'aaw') }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.board }}-sdcard
-          path: ${{ matrix.board == 'aaw2b' && format('images/{0}-images.tar.xz', matrix.board) || format('images/{0}-sdcard.img.xz', matrix.board) }}
+          path: images/${{ matrix.board }}-sdcard.img.xz
 
   merge:
     runs-on: ubuntu-latest
