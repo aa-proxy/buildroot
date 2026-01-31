@@ -1,0 +1,11 @@
+--- a/net/wireless/reg.c.orig	2025-08-30 09:05:04.373135999 +0200
++++ a/net/wireless/reg.c	2025-08-30 09:02:06.598938409 +0200
+@@ -716,7 +716,7 @@
+ 	return true;
+ }
+ 
+-#ifdef CONFIG_CFG80211_REQUIRE_SIGNED_REGDB
++#ifdef XCONFIG_CFG80211_REQUIRE_SIGNED_REGDB
+ static struct key *builtin_regdb_keys;
+ 
+ static void __init load_keys_from_buffer(const u8 *p, unsigned int buflen)
