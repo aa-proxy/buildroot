@@ -1,0 +1,66 @@
+software =
+{
+	version = "0.0.0";
+
+	aaw3 = {
+		hardware-compatibility: [ "1.0" ];
+		stable : {
+            part1 : {
+                images: (
+                    {
+                        filename = "boot.img";
+                        type = "flash";
+                        encrypted = false;
+                        installed-directly = false;
+                        mtdname = "boot1";
+                    },
+                    {
+                        filename = "@@SWUPDATE_ROOTFS_IMAGE_FILE_ENC@@";
+                        type = "ubivol";
+                        encrypted = false;
+                        installed-directly = true;
+                        volume = "rootfs1";
+                    }
+                );
+                uboot: (
+                    {
+                        name = "bootpart";
+                        value = "1";
+                    },
+                    {
+                        name = "upgrade_available";
+                        value = "1";
+                    }
+                );
+            };
+            part2 : {
+                images: (
+                    {
+                        filename = "boot.img";
+                        type = "flash";
+                        encrypted = false;
+                        installed-directly = false;
+                        mtdname = "boot2";
+                    },
+                    {
+                        filename = "root.img";
+                        type = "ubivol";
+                        encrypted = false;
+                        installed-directly = true;
+                        volume = "rootfs2";
+                    }
+                );
+                uboot: (
+                    {
+                        name = "bootpart";
+                        value = "2";
+                    },
+                    {
+                        name = "upgrade_available";
+                        value = "1";
+                    }
+                );
+            };
+        };
+	}
+}
