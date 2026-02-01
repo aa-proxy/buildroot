@@ -1,0 +1,10 @@
+#!/bin/sh
+
+UPGRADE_AVAILABLE=$(fw_printenv -n upgrade_available)
+if [ "$UPGRADE_AVAILABLE" -eq 1 ]; then
+  echo "Upgrade successful, resetting boot count"
+  fw_setenv upgrade_available 0
+  fw_setenv bootcount 0
+else
+  echo "No update pending"
+fi
