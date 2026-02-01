@@ -1,0 +1,9 @@
+BOOT_PART=`fw_printenv -n bootpart | tr -d '\n'`
+
+NEXT_BOOT_PART=2
+if [ $BOOT_PART == '2' ]; then
+	NEXT_BOOT_PART=1
+fi
+
+CFGFILE="/etc/swupdate/swupdate.cfg"
+SWUPDATE_ARGS="-e stable,part${NEXT_BOOT_PART} -f ${CFGFILE}"

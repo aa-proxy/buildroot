@@ -1,0 +1,2 @@
+config BR2_PACKAGE_BOOTCOUNT_RESET
+	bool "U-Boot bootcount reset"
