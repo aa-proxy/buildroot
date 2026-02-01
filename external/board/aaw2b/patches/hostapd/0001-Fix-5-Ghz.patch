@@ -1,0 +1,27 @@
+From 1a8f14cbae9e2a442485fb20be9a74ab953f5ebe Mon Sep 17 00:00:00 2001
+From: Chiel Prins <chiel@cpeb.it>
+Date: Sun, 1 Feb 2026 15:53:20 +0100
+Subject: [PATCH] Fix 5 Ghz
+
+---
+ src/ap/beacon.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/src/ap/beacon.c b/src/ap/beacon.c
+index cec0c9829..2965cdca4 100644
+--- a/src/ap/beacon.c
++++ b/src/ap/beacon.c
+@@ -90,10 +90,6 @@ static u8 * hostapd_eid_ds_params(struct hostapd_data *hapd, u8 *eid)
+ {
+ 	enum hostapd_hw_mode hw_mode = hapd->iconf->hw_mode;
+ 
+-	if (hw_mode != HOSTAPD_MODE_IEEE80211G &&
+-	    hw_mode != HOSTAPD_MODE_IEEE80211B)
+-		return eid;
+-
+ 	*eid++ = WLAN_EID_DS_PARAMS;
+ 	*eid++ = 1;
+ 	*eid++ = hapd->iconf->channel;
+-- 
+2.34.1
+
