@@ -3,7 +3,7 @@
 # AICSemi AIC8800 Drivers
 #
 ################################################################################
-AIC8800_VERSION = eb8652a3d85feeba19474e80e362bf0adaf98cfd
+AIC8800_VERSION = 89f865b80f5f2ba6c0711c560e1d0191e87a1bf0
 AIC8800_SITE = $(call github,radxa-pkg,aic8800,$(AIC8800_VERSION))
 AIC8800_LICENSE = GPL-3.0
 AIC8800_LICENSE_FILES = LICENCE
@@ -21,8 +21,9 @@ AIC8800_INTERFACE := $(strip \
 
 AIC8800_ENABLED_MODELS =  $(strip $(if $(BR2_PACKAGE_AIC8800_FW_AIC8800),aic8800) \
                           $(if $(BR2_PACKAGE_AIC8800_FW_AIC8800D80),aic8800D80) \
+						  $(if $(BR2_PACKAGE_AIC8800_FW_AIC8800D80N),aic8800D80N)) \
                           $(if $(BR2_PACKAGE_AIC8800_FW_AIC8800D80X2),aic8800D80X2) \
-                          $(if $(BR2_PACKAGE_AIC8800_FW_AIC8800DC),aic8800DC))
+                          $(if $(BR2_PACKAGE_AIC8800_FW_AIC8800DC),aic8800DC)
 
 ifeq ($(AIC8800_INTERFACE),USB)
 AIC8800_MODULE_SUBDIRS = src/$(AIC8800_INTERFACE)/driver_fw/drivers/aic8800

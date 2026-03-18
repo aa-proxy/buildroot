@@ -1,0 +1,24 @@
+From 7a811ee739ba6b43d1fc94a9617d9e5474bc973e Mon Sep 17 00:00:00 2001
+From: PugzAreCute <me@pugzarecute.com>
+Date: Wed, 18 Mar 2026 13:53:22 +0530
+Subject: [PATCH] fix: include vmalloc header
+
+* needed for vfree call on L107
+---
+ .../driver_fw/driver/aic8800/aic8800_bsp/aic8800d80n_compat.c    | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/aic8800d80n_compat.c b/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/aic8800d80n_compat.c
+index 0d2d753..bb25206 100644
+--- a/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/aic8800d80n_compat.c
++++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/aic8800d80n_compat.c
+@@ -1,5 +1,6 @@
+ #include "aic8800d80n_compat.h"
+ #include "aic_bsp_export.h"
++#include <linux/vmalloc.h>
+ 
+ #define RWNX_MAC_FW_RF_BASE_NAME_8800D80N   "lmacfw_rf_8800d80n.bin"
+ #define RWNX_MAC_FW_CINIT_NAME_8800D80N_U02 "fmacfw_cinit_8800d80n_u02.bin"
+-- 
+2.53.0
+
