@@ -6,7 +6,7 @@
 case "$1" in
 	start)
 		echo "Loading kernel modules..."
-		modprobe -a hci_uart aic8800_bsp aic8800_fdrv # Wireless
+		modprobe -a aic8800_bsp aic8800_fdrv # Wireless
 		modprobe -a phy-rockchip-naneng-combphy libcomposite # USB gadget drivers
 		modprobe fusb302
 		;;

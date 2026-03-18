@@ -1,0 +1,35 @@
+From 63ec9c14209fdb942f195a0c9df318741547ff37 Mon Sep 17 00:00:00 2001
+From: PugzAreCute <me@pugzarecute.com>
+Date: Wed, 18 Mar 2026 23:25:05 +0530
+Subject: [PATCH] fix: disable debug logging
+
+---
+ src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/aic_btsdio.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/aic_btsdio.h b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/aic_btsdio.h
+index a58edc9..e53e196 100644
+--- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/aic_btsdio.h
++++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/aic_btsdio.h
+@@ -31,15 +31,16 @@
+ #define PRINT_ACL_DATA          1
+ #define PRINT_SCO_DATA          1
+ 
+-#define AICBT_DBG_FLAG          1
++#define AICBT_DBG_FLAG          0
+ 
+ #if AICBT_DBG_FLAG
+ #define AICBT_DBG(fmt, arg...) printk( "aic_btsdio: " fmt "\n" , ## arg)
++#define AICBT_INFO(fmt, arg...) printk("aic_btsdio: " fmt "\n" , ## arg)
+ #else
+ #define AICBT_DBG(fmt, arg...)
++#define AICBT_INFO(fmt, arg...)
+ #endif
+ 
+-#define AICBT_INFO(fmt, arg...) printk("aic_btsdio: " fmt "\n" , ## arg)
+ #define AICBT_WARN(fmt, arg...) printk("aic_btsdio: " fmt "\n" , ## arg)
+ #define AICBT_ERR(fmt, arg...) printk("aic_btsdio: " fmt "\n" , ## arg)
+ 
+-- 
+2.53.0
+

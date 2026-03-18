@@ -1,0 +1,54 @@
+From ff51d45cf5687a5078fc4ecd8cfdcddcefeb9508 Mon Sep 17 00:00:00 2001
+From: PugzAreCute <me@pugzarecute.com>
+Date: Wed, 18 Mar 2026 15:01:56 +0530
+Subject: [PATCH] feat: switch to sdio bluetooth
+
+* uart bluetooth died after bumping br to 2026.02 for unknown reasons
+---
+ src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/Makefile  | 2 +-
+ src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/Makefile | 2 +-
+ src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/btsdio.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/Makefile b/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/Makefile
+index ccc4efe..b610cdf 100644
+--- a/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/Makefile
++++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/Makefile
+@@ -30,7 +30,7 @@ CONFIG_EXT_FEM_8800DCDW = n
+ CONFIG_RESV_MEM_SUPPORT ?= y
+ CONFIG_AMSDU_RX = y
+ CONFIG_IRQ_FALL ?= n
+-CONFIG_SDIO_BT = n
++CONFIG_SDIO_BT = y
+ CONFIG_RADAR_OR_IR_DETECT =n
+ CONFIG_FOR_IPCAM = n
+ CONFIG_BAND_STEERING = n
+diff --git a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/Makefile b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/Makefile
+index 033b8b4..78d1b55 100644
+--- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/Makefile
++++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/Makefile
+@@ -73,7 +73,7 @@ CONFIG_RADAR_OR_IR_DETECT =n
+ CONFIG_DOWNLOAD_FW =n
+ CONFIG_RFTEST=y
+ CONFIG_USB_BT =y
+-CONFIG_SDIO_BT=n
++CONFIG_SDIO_BT=y
+ CONFIG_USE_5G ?= y
+ CONFIG_CREATE_TRACE_POINTS = n
+ CONFIG_TXRX_THREAD_PRIO = y
+diff --git a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/btsdio.c b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/btsdio.c
+index 81c5c1a..62876dc 100644
+--- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/btsdio.c
++++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/btsdio.c
+@@ -254,7 +254,7 @@ int btsdio_init(void)
+ 	hdev->bus = HCI_SDIO;
+ 	hci_set_drvdata(hdev, data);
+ 
+-	hdev->dev_type = HCI_PRIMARY;
++	//hdev->dev_type = HCI_PRIMARY;
+ 
+ 	data->hdev = hdev;
+ 
+-- 
+2.53.0
+
