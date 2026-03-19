@@ -1,14 +1,13 @@
 #!/bin/sh
 #
-# Load kernel modules
+# Load kernel modules (non-blocking)
 #
 
 case "$1" in
 	start)
 		echo "Loading kernel modules..."
-		modprobe -a aic8800_bsp aic8800_fdrv # Wireless
-		modprobe -a phy-rockchip-naneng-combphy libcomposite # USB gadget drivers
-		modprobe fusb302
+		modprobe -a aic8800_bsp aic8800_fdrv &
+		modprobe -a phy-rockchip-naneng-combphy libcomposite fusb302 &
 		;;
 	*)
 		echo "Usage: $0 {start}"
