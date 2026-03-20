@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -42,14 +42,14 @@ jobs:
 
       - name: Upload AAW artifact
         if: startsWith(matrix.board, 'aaw')
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.board }}-images
           path: images/${{ matrix.board }}-images.tar.xz
 
       - name: Upload SD-card artifact
         if: ${{ !startsWith(matrix.board, 'aaw') }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.board }}-sdcard
           path: images/${{ matrix.board }}-sdcard.img.xz
