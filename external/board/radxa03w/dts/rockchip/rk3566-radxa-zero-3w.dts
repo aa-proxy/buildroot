@@ -135,3 +135,47 @@
 		};
 	};
 };
+
+&gpu {
+	status = "disabled";
+};
+
+&hdmi {
+	status = "disabled";
+};
+
+&hdmi_sound {
+	status = "disabled";
+};
+
+&i2s0_8ch {
+	status = "disabled";
+};
+
+&vop {
+	status = "disabled";
+};
+
+&vop_mmu {
+	status = "disabled";
+};
+
+&rga {
+	status = "disabled";
+};
+
+&vpu {
+	status = "disabled";
+};
+
+&vdpu_mmu {
+	status = "disabled";
+};
+
+&vepu {
+	status = "disabled";
+};
+
+&vepu_mmu {
+	status = "disabled";
+};
