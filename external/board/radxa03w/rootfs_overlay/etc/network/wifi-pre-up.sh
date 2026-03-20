@@ -9,5 +9,4 @@ done
 
 echo "$IFACE ready"
 
-iw "$IFACE" set power_save off
 hostapd -B -t -f /var/log/hostapd /var/run/hostapd.conf
