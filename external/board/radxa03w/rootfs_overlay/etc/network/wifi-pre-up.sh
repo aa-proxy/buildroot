@@ -9,4 +9,6 @@ done
 
 echo "$IFACE ready"
 
+aa-proxy-rs --generate-hostapd
+
 hostapd -B -t -f /var/log/hostapd /var/run/hostapd.conf
