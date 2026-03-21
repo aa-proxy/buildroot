@@ -6,8 +6,7 @@
 case "$1" in
 	start)
 		echo "Loading kernel modules..."
-		modprobe -a aic8800_bsp aic8800_fdrv &
-		modprobe -a phy-rockchip-naneng-combphy libcomposite fusb302 &
+		modprobe -a aic8800_bsp aic8800_fdrv libcomposite &
 		;;
 	*)
 		echo "Usage: $0 {start}"
