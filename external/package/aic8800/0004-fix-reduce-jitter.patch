@@ -1,0 +1,41 @@
+From 06df86965e838f9c20413cc206bed2f09b065782 Mon Sep 17 00:00:00 2001
+From: PugzAreCute <me@pugzarecute.com>
+Date: Mon, 23 Mar 2026 10:48:08 +0530
+Subject: [PATCH] fix: reduce jitter
+
+---
+ src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/Makefile  | 2 +-
+ src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/Makefile | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/Makefile b/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/Makefile
+index b610cdf..7209722 100644
+--- a/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/Makefile
++++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/Makefile
+@@ -28,7 +28,7 @@ CONFIG_FORCE_DPD_CALIB = y
+ CONFIG_LOFT_CALIB = n
+ CONFIG_EXT_FEM_8800DCDW = n
+ CONFIG_RESV_MEM_SUPPORT ?= y
+-CONFIG_AMSDU_RX = y
++CONFIG_AMSDU_RX = n
+ CONFIG_IRQ_FALL ?= n
+ CONFIG_SDIO_BT = y
+ CONFIG_RADAR_OR_IR_DETECT =n
+diff --git a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/Makefile b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/Makefile
+index 78d1b55..b7ead10 100644
+--- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/Makefile
++++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/Makefile
+@@ -35,8 +35,8 @@ endif
+ #
+ # WAITING FOR KCONFIG {
+ #
+-CONFIG_RWNX_FULLMAC ?= y
+-CONFIG_RWNX_FHOST ?= n
++CONFIG_RWNX_FULLMAC ?= n
++CONFIG_RWNX_FHOST ?= y
+ 
+ #
+ # DEBUG OPTIONS
+-- 
+2.53.0
+
