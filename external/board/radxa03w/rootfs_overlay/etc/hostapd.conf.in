@@ -15,11 +15,8 @@ wmm_enabled=1
 
 ht_capab=[HT40+][SHORT-GI-20][SHORT-GI-40][RX-STBC1]
 
-vht_oper_chwidth=1
-vht_oper_centr_freq_seg0_idx=42
-
-he_oper_chwidth=1
-he_oper_centr_freq_seg0_idx=42
+vht_oper_chwidth=0
+he_oper_chwidth=0
 
 auth_algs=1
 wpa=2
