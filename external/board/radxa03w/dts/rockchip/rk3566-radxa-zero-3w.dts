@@ -97,35 +97,19 @@
 	status = "okay";
 };
 
-&i2c3{
- 	status = "okay";
+&i2c3 {
+	status = "okay";
 	pinctrl-0 = <&i2c3m1_xfer>;
 
- 	usbc0: usb-typec@22 {
- 		compatible = "fcs,fusb302";
- 		reg = <0x22>;
-
- 		interrupt-parent = <&gpio3>;
- 		interrupts = <RK_PC7 IRQ_TYPE_LEVEL_LOW>;
- 		vbus-supply = <&vbus>;
-		sel-gpios = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
+	usbc0: fusb302@22 {
+		compatible = "fcs,fusb302";
+		reg = <0x22>;
+		interrupt-parent = <&gpio3>;
+		interrupts = <RK_PC7 IRQ_TYPE_LEVEL_LOW>;
+		sel-gpios= <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&usbc0_int>;
-		status="okay";
-
- 		connector {
- 			compatible = "usb-c-connector";
-			data-role = "host";
- 			label = "USB-C";
-			op-sink-microwatt = <10000000>;
- 			pd-revision = /bits/ 8 <0x2 0x0 0x1 0x2>;
- 			//power-role = "sink";
- 			try-power-role = "sink";
-			typec-power-opmode="1.5A";
- 			source-pdos = <PDO_FIXED(5000, 3000, PDO_FIXED_USB_COMM)>;
- 			sink-pdos = <PDO_FIXED(5000, 3000, PDO_FIXED_USB_COMM)>;
- 		};
- 	};	
+	};
 };
 
 &pinctrl {
