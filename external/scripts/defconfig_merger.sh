@@ -20,6 +20,7 @@ FILES=("${CONFIG_DIR}/common.part")
 
 # If the board name starts with "rpi", include the Raspberry Pi-specific config
 [[ "$ARG" == rpi* ]] && FILES+=("${CONFIG_DIR}/common_rpi.part")
+[[ "$ARG" == aaw* ]] && FILES+=("${CONFIG_DIR}/common_aaw.part")
 
 # Finally, add the board-specific defconfig
 FILES+=("${CONFIG_DIR}/${ARG}_defconfig")
