@@ -11,18 +11,24 @@ diff --git a/drivers/usb/gadget/udc/core.c b/drivers/usb/gadget/udc/core.c
 index XXXXXXX..YYYYYYY 100644
 --- a/drivers/usb/gadget/udc/core.c
 +++ b/drivers/usb/gadget/udc/core.c
-@@ -XXX,6 +XXX,20 @@ void usb_gadget_udc_reset(struct usb_gadget *gadget)
+
+@@ -1197,7 +1197,18 @@
+ void usb_gadget_udc_reset(struct usb_gadget *gadget,
+ 		struct usb_gadget_driver *driver)
  {
-+       char *envp[] = {
-+               "USB_EVENT=RESET",
-+               NULL
-+       };
+-	driver->reset(gadget);
++        char *envp[] = {
++                "USB_EVENT=RESET",
++                NULL
++        };
++ 
++        /* Log to dmesg */
++        dev_info(&gadget->dev, "USB gadget RESET detected\n");
++ 
++        /* Send uevent to userspace */
++        kobject_uevent_env(&gadget->dev.kobj, KOBJ_CHANGE, envp);
 +
-+       /* Log to dmesg */
-+       dev_info(&gadget->dev, "USB gadget RESET detected\n");
-+
-+       /* Send uevent to userspace */
-+       kobject_uevent_env(&gadget->dev.kobj, KOBJ_CHANGE, envp);
-+
-        /* existing code continues */
++        driver->reset(gadget);
+ 	usb_gadget_set_state(gadget, USB_STATE_DEFAULT);
  }
+ EXPORT_SYMBOL_GPL(usb_gadget_udc_reset);
