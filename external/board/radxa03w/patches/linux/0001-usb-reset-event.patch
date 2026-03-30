@@ -1,0 +1,28 @@
+From 1234567890abcdef Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Mon, 1 Jan 2026 00:00:00 +0000
+Subject: [PATCH] usb: gadget: add reset event log and uevent
+
+---
+ drivers/usb/gadget/udc/core.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/usb/gadget/udc/core.c b/drivers/usb/gadget/udc/core.c
+index XXXXXXX..YYYYYYY 100644
+--- a/drivers/usb/gadget/udc/core.c
++++ b/drivers/usb/gadget/udc/core.c
+@@ -XXX,6 +XXX,20 @@ void usb_gadget_udc_reset(struct usb_gadget *gadget)
+ {
++       char *envp[] = {
++               "USB_EVENT=RESET",
++               NULL
++       };
++
++       /* Log to dmesg */
++       dev_info(&gadget->dev, "USB gadget RESET detected\n");
++
++       /* Send uevent to userspace */
++       kobject_uevent_env(&gadget->dev.kobj, KOBJ_CHANGE, envp);
++
+        /* existing code continues */
+ }
