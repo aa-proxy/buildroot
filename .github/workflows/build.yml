@@ -16,6 +16,14 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Cache downloads
+        uses: actions/cache@v4
+        with:
+          path: buildroot/dl
+          key: ${{ github.workflow }}-downloads-${{ hashFiles('external/configs/*') }}
+          restore-keys: |
+            ${{ github.workflow }}-downloads-
+
       - name: Build Docker image
         run: CONTAINER_ENGINE=docker ./docker-dev.sh build
 
@@ -26,10 +34,16 @@ jobs:
           echo "Building board: ${{ matrix.board }}"
           CONTAINER_ENGINE=docker ./docker-dev.sh "${{ matrix.board }}"
           IMAGE_DIR=buildroot/output/${{ matrix.board }}/images
+          
           if [[ "${{ matrix.board }}" == aaw* ]]; then
             TAR_NAME=images/${{ matrix.board }}-images.tar.xz
-            echo "Compressing entire images directory for aaw..."
-            tar -cJf "$TAR_NAME" -C "$IMAGE_DIR" .
+          
+            BOOT_IMG=""
+            if [[ "${{ matrix.board }}" == "aaw3" ]]; then
+              BOOT_IMG="boot1.img boot2.img"
+            fi
+          
+            tar -cJf "$TAR_NAME" -C "$IMAGE_DIR" download.bin env.img env_r.img idblock.img uboot.img $BOOT_IMG root.img
           else
             IMG="$IMAGE_DIR/sdcard.img"
             if [[ -f "$IMG" ]]; then
@@ -38,6 +52,11 @@ jobs:
               echo "WARNING: Image $IMG not found!"
               #exit 1
             fi
+          fi
+          
+          UPDATE_IMG="$IMAGE_DIR/update_image.swu"
+          if [[ -f "$UPDATE_IMG" ]]; then
+            cp -f "$UPDATE_IMG" images/${{ matrix.board }}.swu
           fi
 
       - name: Upload AAW artifact
@@ -53,6 +72,12 @@ jobs:
         with:
           name: ${{ matrix.board }}-sdcard
           path: images/${{ matrix.board }}-sdcard.img.xz
+
+      - name: Upload SWU artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.board }}-swu
+          path: images/${{ matrix.board }}.swu
 
   merge:
     runs-on: ubuntu-latest
