@@ -17,7 +17,8 @@ endef
 # pass git hashes as env variables
 AA_PROXY_RS_CARGO_ENV = \
     AA_PROXY_COMMIT="$(AA_PROXY_RS_COMMIT)" \
-    BUILDROOT_COMMIT="$(BUILDROOT_COMMIT)"
+    BUILDROOT_COMMIT="$(BUILDROOT_COMMIT)" \
+    AA_PROXY_BOARD="$(notdir $(patsubst %/,%,$(CONFIG_DIR)))"
 
 # use own toolchain only for RISC-V builds (milkv-duos)
 ifeq ($(findstring milkv-duos,$(CONFIG_DIR)),milkv-duos)
