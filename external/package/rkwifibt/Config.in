@@ -9,6 +9,10 @@ config BR2_PACKAGE_RKWIFIBT_AIC8800
 	bool "AIC8800 support"
 	depends on BR2_PACKAGE_RKWIFIBT
 
+config BR2_PACKAGE_RKWIFIBT_AWCM256
+	bool "AW-CM256 (BCM43455) support"
+	depends on BR2_PACKAGE_RKWIFIBT
+
 config BR2_PACKAGE_RKWIFIBT_BT_UART_DEV
 	string "Bluetooth UART dev"
 	depends on BR2_PACKAGE_RKWIFIBT

@@ -1,0 +1,58 @@
+#!/bin/sh
+#
+# Load the Broadcom Bluetooth firmware patch and attach the HCI UART
+#
+# brcm_patchram_plus downloads the .hcd patchram into the controller and then
+# stays resident with --enable_hci to keep the HCI line discipline attached,
+# so it is started as a background daemon and must run before bluetoothd.
+
+DAEMON="brcm_patchram_plus"
+PIDFILE="/var/run/$DAEMON.pid"
+BT_FIRMWARE="@BT_FIRMWARE_PATH@"
+BT_UART_DEV="/dev/@BT_UART_DEV@"
+BT_UART_BAUDRATE="@BT_UART_BAUDRATE@"
+
+RETVAL=0
+
+case "$1" in
+	start)
+		printf "Starting $DAEMON: "
+
+		# The controller comes up soft-blocked, bluetoothd cannot open it.
+		/usr/sbin/rfkill unblock bluetooth
+
+		# Give the controller a stable BD address. ethaddr lives in the U-Boot
+		# environment, so it survives reflashing; fall back to a random address
+		# rather than failing the attach outright.
+		BDADDR="$(fw_printenv -n ethaddr 2>/dev/null)"
+		if [ -n "$BDADDR" ]; then
+			BDADDR_ARGS="--bd_addr $BDADDR"
+		else
+			echo -n "(no ethaddr, using random BD address) "
+			BDADDR_ARGS="--bd_addr_rand"
+		fi
+
+		start-stop-daemon -S -b -q -m -p "$PIDFILE" -x "/usr/bin/$DAEMON" -- \
+			$BDADDR_ARGS --enable_hci --no2bytes --use_baudrate_for_download \
+			--tosleep 200000 --baudrate "$BT_UART_BAUDRATE" \
+			--patchram "$BT_FIRMWARE" "$BT_UART_DEV"
+		RETVAL=$?
+		[ $RETVAL = 0 ] && echo "OK" || echo "FAIL"
+		;;
+	stop)
+		printf "Stopping $DAEMON: "
+		start-stop-daemon -K -q -p "$PIDFILE"
+		RETVAL=$?
+		[ $RETVAL = 0 ] && echo "OK" || echo "FAIL"
+		;;
+	restart)
+		$0 stop
+		sleep 1
+		$0 start
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		;;
+esac
+
+exit $RETVAL

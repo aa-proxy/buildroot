@@ -5,3 +5,17 @@ config BR2_PACKAGE_AA_PROXY_RS
 	select BR2_PACKAGE_OPENSSL
 	help
 	  AndroidAuto wired/wireless proxy
+
+if BR2_PACKAGE_AA_PROXY_RS
+
+config BR2_PACKAGE_AA_PROXY_RS_IO_URING
+	bool "io_uring support"
+	default y
+	help
+	  Build aa-proxy-rs with its io-uring feature (tokio-uring).
+
+	  This needs io_uring in the kernel, which arrived in 5.1. On an
+	  older kernel tokio_uring::start() panics at startup with ENOSYS
+	  and the proxy never runs, so turn this off for such boards.
+
+endif
