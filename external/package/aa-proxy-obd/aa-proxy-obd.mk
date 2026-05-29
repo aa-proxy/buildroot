@@ -1,4 +1,4 @@
-AA_PROXY_OBD_VERSION = main
+AA_PROXY_OBD_VERSION = feat/multi-adapter-daemon
 AA_PROXY_OBD_SITE = https://github.com/aa-proxy/aa-proxy-obd.git
 AA_PROXY_OBD_SITE_METHOD = git
 
