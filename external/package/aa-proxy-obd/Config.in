@@ -1,0 +1,7 @@
+config BR2_PACKAGE_AA_PROXY_OBD
+	bool "aa-proxy-obd"
+	depends on BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS
+	select BR2_PACKAGE_HOST_RUSTC
+	help
+	  Rust daemon to read EV OBD-II parameters via bluetooth dongle.
+	  Started automatically by aa-proxy-rs via ev_battery_logger config.
