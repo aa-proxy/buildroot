@@ -1,0 +1,64 @@
+software =
+{
+	version = "0.0.0";
+
+	radxa03w = {
+		hardware-compatibility: [ "1.0"];
+		stable : {
+			part1 : {
+				images: (
+					{
+						filename = "rootfs.ext4";
+						type = "raw";
+						compressed = "zlib";
+						installed-directly = true;
+						device = "/dev/mmcblk1p2";
+					}
+				);
+				scripts: (
+					{
+						filename = "update.sh";
+						type = "shellscript";
+					}
+				);
+				bootenv: (
+					{
+						name = "bootpart";
+						value = "2";
+					},
+					{
+						name = "ustate";
+						value = "1";
+					}
+				);
+			};
+			part2 : {
+				images: (
+					{
+						filename = "rootfs.ext4";
+						type = "raw";
+						compressed = "zlib";
+						installed-directly = true;
+						device = "/dev/mmcblk1p3";
+					}
+				);
+				scripts: (
+					{
+						filename = "update.sh";
+						type = "shellscript";
+					}
+				);
+				bootenv: (
+					{
+						name = "bootpart";
+						value = "3";
+					},
+					{
+						name = "ustate";
+						value = "1";
+					}
+				);
+			};
+		};
+	}
+}
