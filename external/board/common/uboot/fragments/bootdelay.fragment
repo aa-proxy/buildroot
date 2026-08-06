@@ -1,0 +1,5 @@
+# >0: delay in seconds, interruptible
+#  0: no delay, still interruptible
+# -1: no countdown, drops to prompt
+# -2: no delay, not interruptible
+CONFIG_BOOTDELAY=-2
