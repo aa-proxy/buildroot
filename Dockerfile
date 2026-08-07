@@ -45,6 +45,3 @@ USER ${USERNAME}
 WORKDIR /app
 
 ENV SHELL=/bin/bash
-
-COPY build-image.sh /build-image.sh
-ENTRYPOINT ["/build-image.sh"]
