@@ -1,16 +1,45 @@
+From 2a367a630e9be25d6820471a17f72e583662f687 Mon Sep 17 00:00:00 2001
+From: Fabien Lehoussel <fabien.lehoussel@smile.fr>
+Date: Fri, 7 Aug 2026 14:53:17 +0200
+Subject: [PATCH] package/pkg-generic.mk: refine build directory cleanup
+
+Introduce the RM_WORK variable to conditionally clean up package build
+directories after installation
+- Wrap the cleanup action in a check for RM_WORK = y.
+- Instead of removing the entire build directory with 'rm -Rf', use a
+  'find' command to preserve essential tracking files:
+    - '.stamp_*' (prevents Buildroot from rebuilding packages unnecessarily)
+    - '.files-list*' (used for legal-info and size tracking)
+    - '.applied_patches_list' (tracks applied package patches)
+- Add a clear trace output: "rmwork: removing <pkg> build files".
+- Skip cleaning for key system components: freertos, uboot, linux-custom.
+---
+ package/pkg-generic.mk | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
 diff --git a/package/pkg-generic.mk b/package/pkg-generic.mk
-index cf55101265..f2909df712 100644
+index dd440e4062..47c4acac7a 100644
 --- a/package/pkg-generic.mk
 +++ b/package/pkg-generic.mk
-@@ -385,6 +385,11 @@ $(BUILD_DIR)/%/.stamp_installed:
+@@ -385,6 +385,18 @@ $(BUILD_DIR)/%/.stamp_installed:
  	@$(call pkg_size_after,$(HOST_DIR),-host)
  	@$(call check_bin_arch)
  	$(Q)touch $@
-+	@if echo "$(@D)" | grep -Eq "freertos|uboot|linux-custom"; then \
-+	    echo "skip rm (freertos or uboot)"; \
-+	else \
-+	    rm -Rf "$(@D)"; \
++	@if [ "$(RM_WORK)" = "y" ]; then \
++		if echo "$(@D)" | grep -Eq "freertos|uboot|linux-custom"; then \
++			echo "skip rm (freertos, uboot or linux-custom)"; \
++		else \
++			echo "rmwork: removing $(notdir $(@D)) build files"; \
++			find "$(@D)" -mindepth 1 -maxdepth 1 \
++				-not -name ".stamp_*" \
++				-not -name ".files-list*" \
++				-not -name ".applied_patches_list" \
++				-exec rm -rf {} +; \
++		fi; \
 +	fi
  
  # Remove package sources
  $(BUILD_DIR)/%/.stamp_dircleaned:
+-- 
+2.43.0
+
