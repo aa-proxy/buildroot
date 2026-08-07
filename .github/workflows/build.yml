@@ -24,7 +24,7 @@ jobs:
           set -e
           mkdir images
           echo "Building board: ${{ matrix.board }}"
-          CONTAINER_ENGINE=docker ./docker-dev.sh "${{ matrix.board }}"
+          CONTAINER_ENGINE=docker ./docker-dev.sh "${{ matrix.board }}" --rmwork
           IMAGE_DIR=buildroot/output/${{ matrix.board }}/images
           
           if [[ "${{ matrix.board }}" == aaw* ]]; then
