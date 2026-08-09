@@ -16,7 +16,7 @@ cd buildroot
 If you want more control, you can enter an interactive shell inside the development container:
 
 ```bash
-./docker-dev.sh shell
+./docker-dev.sh
 ```
 
 Once inside, you can manually run builds like this:
