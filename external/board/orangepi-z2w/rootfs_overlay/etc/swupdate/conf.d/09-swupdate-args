@@ -1,0 +1,17 @@
+#!/bin/sh
+
+ROOTFS="$(swupdate -g)"
+
+if [ "$ROOTFS" = "/dev/mmcblk1p2" ]; then
+    SELECTION="stable,part2"
+else
+    SELECTION="stable,part1"
+fi
+
+USTATE="$(fw_printenv -n ustate)"
+if [ "$USTATE" != "0" ]; then
+    fw_setenv ustate 0
+fi
+
+CFGFILE="/etc/swupdate.cfg"
+SWUPDATE_ARGS="-e ${SELECTION} -f ${CFGFILE}"
