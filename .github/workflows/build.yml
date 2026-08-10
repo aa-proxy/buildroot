@@ -2,13 +2,44 @@ name: Build SD images
 
 on:
   workflow_dispatch:
+    inputs:
+      board:
+        description: "Board to build (or 'all')"
+        required: false
+        default: all
+        type: choice
+        options:
+          - all
+          - aaw2b
+          - aaw3
+          - rpi02w
+          - rpi0w
+          - rpi3a
+          - rpi4
+          - rpi5
+          - radxa03w
+          - milkv-duos
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      boards: ${{ steps.set.outputs.boards }}
+    steps:
+      - id: set
+        run: |
+          if [ "${{ inputs.board }}" = "all" ] || [ -z "${{ inputs.board }}" ]; then
+            echo 'boards=["aaw2b","aaw3","rpi02w","rpi0w","rpi3a","rpi4","rpi5","radxa03w","milkv-duos"]' >> "$GITHUB_OUTPUT"
+          else
+            echo 'boards=["${{ inputs.board }}"]' >> "$GITHUB_OUTPUT"
+          fi
+
   build:
+    needs: prepare
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        board: [ aaw2b, aaw3, rpi02w, rpi0w, rpi3a, rpi4, rpi5, radxa03w, milkv-duos ]
+        board: ${{ fromJson(needs.prepare.outputs.boards) }}
 
     steps:
       - name: Checkout
