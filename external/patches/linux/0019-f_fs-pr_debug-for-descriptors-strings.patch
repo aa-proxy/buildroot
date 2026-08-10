@@ -1,0 +1,20 @@
+--- a/drivers/usb/gadget/function/f_fs.c
++++ b/drivers/usb/gadget/function/f_fs.c
+@@ -393,7 +393,7 @@
+ 
+ 		/* Handle data */
+ 		if (ffs->state == FFS_READ_DESCRIPTORS) {
+-			pr_info("read descriptors\n");
++			pr_debug("read descriptors\n");
+ 			ret = __ffs_data_got_descs(ffs, data, len);
+ 			if (ret < 0)
+ 				break;
+@@ -401,7 +401,7 @@
+ 			ffs->state = FFS_READ_STRINGS;
+ 			ret = len;
+ 		} else {
+-			pr_info("read strings\n");
++			pr_debug("read strings\n");
+ 			ret = __ffs_data_got_strings(ffs, data, len);
+ 			if (ret < 0)
+ 				break;
