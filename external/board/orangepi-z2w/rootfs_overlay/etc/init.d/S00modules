@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# Load kernel modules (non-blocking)
+#
+
+case "$1" in
+	start)
+		echo "Loading kernel modules..."
+		;;
+	*)
+		echo "Usage: $0 {start}"
+		exit 1
+esac
+
+exit $?
