@@ -12,6 +12,7 @@ usage() {
     echo "Options:"
     echo "    -s,--shell   - Init board environment and enter the shell"
     echo "    -r,--rmwork  - Configure RM_WORK option to clean package build directories (saves space)"
+    echo "    -v,--verbose - Enable verbose mode"
     echo "    -h,--help    - Show this help message"
 }
 
@@ -30,6 +31,7 @@ BOARD=$1
 shift
 SHELL_MODE=0
 RMWORK_MODE=0
+BUILD_VERBOSE=0
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
@@ -41,6 +43,12 @@ while [[ $# -gt 0 ]]; do
             RMWORK_MODE=1
             shift
             ;;
+
+        -v|--verbose)
+            BUILD_VERBOSE=1
+            shift
+            ;;
+
         -h|--help)
             usage
             exit 0
@@ -131,5 +139,26 @@ if [ "$SHELL_MODE" -eq 1 ]; then
     echo "Entering interactive shell..."
     exec /bin/bash
 else
-    make -j "$(nproc --all)"
+    BUILD_LOG="${OUTPUT}/build.log"
+    # Launch buildroot build and redirect output build.log
+    if [[ ${BUILD_VERBOSE} -eq 1 ]]; then
+        # Verbose mode: display full build output and save to log
+        # shellcheck disable=SC2086
+        make -j "$(nproc --all)" | tee "${BUILD_LOG}" || exit 1
+    else
+        # Normal mode:
+        #   1. Run "make"
+        #   2. Save the complete log to build.log
+        #   3. Show only high-level ">>> ..." lines on the console
+        #   4. On failure, print the last 200 lines of the log for debugging
+        # shellcheck disable=SC2086
+        make -j "$(nproc --all)" 2>&1 \
+        | tee "${BUILD_LOG}" \
+        | grep --line-buffered '>>>' \
+        || {
+            echo "=== Buildroot build failed, last 200 lines of ${BUILD_LOG}: ==="
+            tail -200 "${BUILD_LOG}"
+            exit 1
+        }
+    fi
 fi
