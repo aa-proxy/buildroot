@@ -8,18 +8,23 @@ UWE5622_VERSION = 9422f6e27168932270db03c3d37743679c710aaa
 UWE5622_SITE = $(call github,armbian,uwe5622,$(UWE5622_VERSION))
 UWE5622_LICENSE = GPL-2.0
 
-# Only build the WiFi side (bsp core + sprdwl_ng net driver).
-# tty-sdio (Bluetooth over SDIO) is left out for now: its Makefile
-# hardcodes an include path relative to the kernel source tree
-# (drivers/net/wireless/uwe5622/unisocwcn/include), which assumes
-# in-tree placement and does not resolve for an out-of-tree build.
+# tty-sdio (Bluetooth over SDIO)'s own Makefile hardcodes an include path
+# relative to the kernel source tree (drivers/net/wireless/uwe5622/unisocwcn/
+# include), which assumes in-tree placement. It also honors UNISOC_BSP_INCLUDE
+# as an extra -I, which we point at our own unisocwcn/include to satisfy it
+# out-of-tree instead of patching the hardcoded path.
 
 UWE5622_MODULE_MAKE_OPTS = \
 	CONFIG_AW_WIFI_DEVICE_UWE5622=y \
 	CONFIG_WLAN_UWE5622=m \
 	CONFIG_UNISOC_WIFI_PS=$(BR2_PACKAGE_UWE5622_WIFI_PS) \
 	UNISOC_FW_PATH_CONFIG=/lib/firmware/uwe5622/ \
-	UNISOC_WIFI_CUS_CONFIG=/lib/firmware/uwe5622
+	UNISOC_WIFI_CUS_CONFIG=/lib/firmware/uwe5622 \
+	UNISOC_BSP_INCLUDE=$(@D)/unisocwcn/include
+
+ifeq ($(BR2_PACKAGE_UWE5622_BLUETOOTH),y)
+UWE5622_MODULE_MAKE_OPTS += CONFIG_TTY_OVERY_SDIO=m
+endif
 
 # Firmware isn't bundled in the armbian/uwe5622 driver repo itself;
 # it lives in armbian/firmware. Grab just the files needed for this
@@ -65,6 +70,15 @@ define UWE5622_KERNEL_MODULES_BUILD
 		PWD=$(@D)/unisocwifi \
 		M=$(@D)/unisocwifi \
 		modules
+	$(if $(filter y,$(BR2_PACKAGE_UWE5622_BLUETOOTH)),\
+		$(LINUX_MAKE_ENV) $(UWE5622_MAKE) \
+			-C $(LINUX_DIR) \
+			$(LINUX_MAKE_FLAGS) \
+			$(UWE5622_MODULE_MAKE_OPTS) \
+			KBUILD_EXTRA_SYMBOLS=$(@D)/unisocwcn/Module.symvers \
+			PWD=$(@D)/tty-sdio \
+			M=$(@D)/tty-sdio \
+			modules)
 endef
 
 define UWE5622_KERNEL_MODULES_INSTALL
@@ -83,4 +97,12 @@ define UWE5622_KERNEL_MODULES_INSTALL
 		PWD=$(@D)/unisocwifi \
 		M=$(@D)/unisocwifi \
 		modules_install
+	$(if $(filter y,$(BR2_PACKAGE_UWE5622_BLUETOOTH)),\
+		$(LINUX_MAKE_ENV) $(UWE5622_MAKE) \
+			-C $(LINUX_DIR) \
+			$(LINUX_MAKE_FLAGS) \
+			$(UWE5622_MODULE_MAKE_OPTS) \
+			PWD=$(@D)/tty-sdio \
+			M=$(@D)/tty-sdio \
+			modules_install)
 endef
