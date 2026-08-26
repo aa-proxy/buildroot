@@ -6,10 +6,6 @@ config BR2_PACKAGE_UWE5622
 	  wireless chip, packaged as "AW859A" on Allwinner boards
 	  (e.g. Orange Pi Zero2W).
 
-	  This only builds the WiFi (unisocwcn + unisocwifi/sprdwl_ng)
-	  side of the driver, not the Bluetooth-over-SDIO (tty-sdio)
-	  part.
-
 	  https://github.com/armbian/uwe5622
 
 if BR2_PACKAGE_UWE5622
@@ -19,5 +15,13 @@ config BR2_PACKAGE_UWE5622_WIFI_PS
 	default n
 	help
 	  Corresponds to the driver's CONFIG_UNISOC_WIFI_PS option.
+
+config BR2_PACKAGE_UWE5622_BLUETOOTH
+	bool "Enable Bluetooth (tty-sdio)"
+	default n
+	help
+	  Also build the Bluetooth-over-SDIO (tty-sdio) side of the driver.
+	  It registers a tty exposing an H4-like HCI protocol; attach it
+	  with btattach (e.g. from bluez5-utils) to bring up a hci interface.
 
 endif
