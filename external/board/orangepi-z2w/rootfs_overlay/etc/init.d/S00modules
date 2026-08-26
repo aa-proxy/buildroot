@@ -3,13 +3,33 @@
 # Load kernel modules (non-blocking)
 #
 
+start_wifi_bt()
+{
+	modprobe sprdwl_ng || return
+
+	# wifi and BT share the same "marlin" chip firmware; the wifi
+	# module triggers its download/boot, and BT can't come up until
+	# that's done (fails with "not have card" otherwise). Poll for
+	# wlan0 instead of a blind sleep, capped at 5s.
+	i=0
+	while [ ! -e /sys/class/net/wlan0 ] && [ $i -lt 50 ]; do
+		sleep 0.1
+		i=$((i + 1))
+	done
+
+	modprobe sprdbt_tty || return
+	btattach -B /dev/ttyBT0 -P h4 -S 115200 &
+	rfkill unblock bluetooth
+}
+
 case "$1" in
 	start)
 		echo "Loading kernel modules..."
+		start_wifi_bt
 		;;
 	*)
 		echo "Usage: $0 {start}"
 		exit 1
 esac
 
-exit $?
+exit 0
