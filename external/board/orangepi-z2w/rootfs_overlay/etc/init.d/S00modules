@@ -2,9 +2,18 @@
 #
 # Load kernel modules (non-blocking)
 #
+# WiFi/BT chip: AW859A, actually a Unisoc/Spreadtrum UWE5622
+# (package external/package/uwe5622).
+#
 
 start_wifi_bt()
 {
+	# hciattach_opi reads the real BT MAC from /sys/class/addr_mgt/addr_bt
+	# (exposed by the sunxi_addr driver, see linux patches) and falls
+	# back to a hardcoded placeholder (BR/EDR-only, no LE reported) if that
+	# path doesn't exist. sprdwl_ng also pulls its WiFi MAC from the same
+	# driver, so load it before either.
+	modprobe sunxi_addr || return
 	modprobe sprdwl_ng || return
 
 	# wifi and BT share the same "marlin" chip firmware; the wifi
@@ -18,8 +27,17 @@ start_wifi_bt()
 	done
 
 	modprobe sprdbt_tty || return
-	btattach -B /dev/ttyBT0 -P h4 -S 115200 &
+
+	# BT stays rfkill-blocked by default at boot; hciattach_opi can't
+	# open /dev/ttyBT0 until it's unblocked.
 	rfkill unblock bluetooth
+
+	# hciattach_opi also loads /lib/firmware/bt_configure_{pskey,rf}.ini
+	# to calibrate the chip (manufacturer ID, BT/LE feature set). Without
+	# them it doesn't fail, it silently skips calibration and the
+	# controller comes up with no LE support. It exits on its own once
+	# attach completes; backgrounded so this script doesn't wait on it.
+	hciattach_opi -s 1500000 /dev/ttyBT0 sprd &
 }
 
 case "$1" in
