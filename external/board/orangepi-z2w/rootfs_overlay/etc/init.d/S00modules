@@ -6,6 +6,14 @@
 # (package external/package/uwe5622).
 #
 
+start_usb_gadget()
+{
+	# CONFIG_USB_LIBCOMPOSITE is a module: without it,
+	# /sys/kernel/config/usb_gadget doesn't exist yet when S92usb_gadget
+	# runs, so it can't set up the accessory/default gadgets.
+	modprobe libcomposite
+}
+
 start_wifi_bt()
 {
 	# hciattach_opi reads the real BT MAC from /sys/class/addr_mgt/addr_bt
@@ -43,6 +51,7 @@ start_wifi_bt()
 case "$1" in
 	start)
 		echo "Loading kernel modules..."
+		start_usb_gadget
 		start_wifi_bt
 		;;
 	*)
