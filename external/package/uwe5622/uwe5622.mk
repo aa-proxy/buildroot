@@ -29,15 +29,28 @@ endif
 # Firmware isn't bundled in the armbian/uwe5622 driver repo itself;
 # it lives in armbian/firmware. Grab just the files needed for this
 # chip instead of the whole (large) firmware repo.
+#
+# bt_configure_pskey.ini/bt_configure_rf.ini live at the repo root (not
+# under uwe5622/) and are what hciattach_opi looks for at
+# /lib/firmware/bt_configure_{pskey,rf}.ini. Without them it silently
+# skips BT calibration (comp_id, feature_set, RF power tables) instead of
+# failing, which is why bluetoothctl reports Manufacturer: 0x0000 instead
+# of 0x01ec (Spreadtrum) and the controller never advertises LE support.
 UWE5622_EXTRA_DOWNLOADS = \
 	https://raw.githubusercontent.com/armbian/firmware/master/uwe5622/wcnmodem.bin \
-	https://raw.githubusercontent.com/armbian/firmware/master/uwe5622/wifi_2355b001_1ant.ini
+	https://raw.githubusercontent.com/armbian/firmware/master/uwe5622/wifi_2355b001_1ant.ini \
+	https://raw.githubusercontent.com/armbian/firmware/master/bt_configure_pskey.ini \
+	https://raw.githubusercontent.com/armbian/firmware/master/bt_configure_rf.ini
 
 define UWE5622_INSTALL_FIRMWARE
 	$(INSTALL) -D -m 0644 $(UWE5622_DL_DIR)/wcnmodem.bin \
 		$(TARGET_DIR)/lib/firmware/uwe5622/wcnmodem.bin
 	$(INSTALL) -D -m 0644 $(UWE5622_DL_DIR)/wifi_2355b001_1ant.ini \
 		$(TARGET_DIR)/lib/firmware/uwe5622/wifi_2355b001_1ant.ini
+	$(INSTALL) -D -m 0644 $(UWE5622_DL_DIR)/bt_configure_pskey.ini \
+		$(TARGET_DIR)/lib/firmware/bt_configure_pskey.ini
+	$(INSTALL) -D -m 0644 $(UWE5622_DL_DIR)/bt_configure_rf.ini \
+		$(TARGET_DIR)/lib/firmware/bt_configure_rf.ini
 endef
 
 UWE5622_INSTALL_TARGET_CMDS += $(UWE5622_INSTALL_FIRMWARE)
