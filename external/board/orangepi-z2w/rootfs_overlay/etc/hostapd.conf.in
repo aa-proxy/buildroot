@@ -6,17 +6,23 @@ interface=wlan0
 # a beacon.
 driver=nl80211
 
-# Hardcoded to 2.4 GHz / channel 6 instead of {{HW_MODE}}/{{CHANNEL}}: the
-# sprdwl_ng/UWE5622 AP mode doesn't actually transmit on 5 GHz (hostapd
-# completes every nl80211 setup step and reports AP-ENABLED, but no beacon
-# ever goes out over the air - confirmed 2026-08-28), so we can't let the
-# usual iw-list-based auto-detection pick 5 GHz for this board.
-hw_mode=g
-ieee80211be=0
-ieee80211ax=0
-ieee80211ac=0
-ieee80211n=1
-channel=6
+# 5 GHz AP mode was thought broken on sprdwl_ng/UWE5622 (hostapd
+# reported AP-ENABLED but never actually transmitted a beacon), so
+# this used to be hardcoded to 2.4 GHz/channel 6. Root cause found
+# 2026-08-28: it's a hostapd 2.11+ regression on this driver, not a
+# hardware limitation - fixed by forcing hostapd 2.10 for this board
+# (BR2_PACKAGE_HOSTAPD_FORCE_2_10 in
+# external/configs/orangepi_zero2w_defconfig). Auto-detection can
+# safely pick 5 GHz again.
+#
+# No ieee80211be line here: hostapd 2.10 (forced for this board, see
+# above) predates the EHT/WiFi 7 config keyword entirely and hard-
+# errors on unknown directives ("unknown configuration item").
+hw_mode={{HW_MODE}}
+ieee80211ax={{AX_MODE}}
+ieee80211ac={{AC_MODE}}
+ieee80211n={{N_MODE}}
+channel={{CHANNEL}}
 
 auth_algs=1
 wpa=2
