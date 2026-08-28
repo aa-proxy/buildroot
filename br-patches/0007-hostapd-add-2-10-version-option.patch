@@ -1,0 +1,91 @@
+From b101d81fdbb6c99aa8ebf075b6ac78e69a4f53bc Mon Sep 17 00:00:00 2001
+From: Fabien Lehoussel <fabien.lehoussel@smile.fr>
+Date: Fri, 28 Aug 2026 16:45:54 +0200
+Subject: [PATCH] package/hostapd: add BR2_PACKAGE_HOSTAPD_FORCE_2_10 option
+
+hostapd 2.11+ silently breaks 5GHz AP mode with some closed-source,
+unmaintained WiFi vendor drivers - confirmed on orangepi-z2w
+(Spreadtrum/Unisoc sprdwl_ng, UWE5622 combo chip): hostapd reports
+AP-ENABLED and completes setup, but no beacon is ever transmitted
+over the air. hostapd 2.10 is confirmed working end-to-end (real
+WPA2 handshake) against the same board/driver/firmware/kernel.
+
+The exact regression in the 2.10->2.11 diff hasn't been pinned down.
+It is NOT the AP_SETTINGS_FLAGS/SA-Query-offload attribute added in
+2.11's AP-setup netlink code (the obvious unconditional new addition
+touching this driver's code path) - tested on real hardware with a
+patch suppressing just that attribute (compiler invocation confirmed
+the define was applied) and the board still didn't work, ruling it
+out.
+
+Add a per-board opt-in instead of a global downgrade: boards hitting
+this regression can set BR2_PACKAGE_HOSTAPD_FORCE_2_10=y, while
+others keep tracking Buildroot's default hostapd version whatever it
+bumps to later. Both hostapd-2.10.tar.gz and hostapd-2.11.tar.gz
+hashes are kept in hostapd.hash since either may be fetched depending
+on the option.
+---
+ package/hostapd/Config.in    | 18 ++++++++++++++++++
+ package/hostapd/hostapd.hash |  3 +++
+ package/hostapd/hostapd.mk   |  4 ++++
+ 3 files changed, 25 insertions(+)
+
+diff --git a/package/hostapd/Config.in b/package/hostapd/Config.in
+index 660274ddf0..cd956844b9 100644
+--- a/package/hostapd/Config.in
++++ b/package/hostapd/Config.in
+@@ -14,6 +14,24 @@ config BR2_PACKAGE_HOSTAPD
+ 
+ if BR2_PACKAGE_HOSTAPD
+ 
++config BR2_PACKAGE_HOSTAPD_FORCE_2_10
++	bool "Force hostapd 2.10"
++	help
++	  Force hostapd version 2.10 instead of Buildroot's current
++	  default version, regardless of any later bump. Some
++	  closed-source, unmaintained WiFi vendor drivers (e.g.
++	  Spreadtrum/Unisoc sprdwl_ng, used by the UWE5622 combo chip on
++	  the Orange Pi Zero2W) silently break in AP mode on 5GHz with
++	  hostapd 2.11+: hostapd reports AP-ENABLED and completes setup,
++	  but no beacon is ever transmitted over the air. The exact
++	  regression in the 2.10->2.11 diff hasn't been pinned down (it
++	  is not the AP_SETTINGS_FLAGS/SA-Query-offload addition, which
++	  was tested and ruled out) - 2.10 is confirmed to work.
++
++	  Enable this only for boards that have hit this regression.
++	  Leave it off to keep tracking Buildroot's default hostapd
++	  version.
++
+ config BR2_PACKAGE_HOSTAPD_DRIVER_HOSTAP
+ 	bool "Enable hostap driver"
+ 	default y
+diff --git a/package/hostapd/hostapd.hash b/package/hostapd/hostapd.hash
+index 7921586172..73c3aac9fe 100644
+--- a/package/hostapd/hostapd.hash
++++ b/package/hostapd/hostapd.hash
+@@ -1,3 +1,6 @@
+ # Locally calculated
+ sha256  2b3facb632fd4f65e32f4bf82a76b4b72c501f995a4f62e330219fe7aed1747a  hostapd-2.11.tar.gz
+ sha256  f1b5992bbdd015c3ccb7faaadd62ef58ed821e15b9329bf2ceb27511ccc3f562  README
++# hostapd-2.10.tar.gz, used when BR2_PACKAGE_HOSTAPD_FORCE_2_10=y
++sha256  206e7c799b678572c2e3d12030238784bc4a9f82323b0156b4c9466f1498915d  hostapd-2.10.tar.gz
++sha256  d8d7e5827186a8922606a4be5b78468549164085de3b28632259e0ff572860ac  README
+diff --git a/package/hostapd/hostapd.mk b/package/hostapd/hostapd.mk
+index d83b574fad..6106b8d43d 100644
+--- a/package/hostapd/hostapd.mk
++++ b/package/hostapd/hostapd.mk
+@@ -4,7 +4,11 @@
+ #
+ ################################################################################
+ 
++ifeq ($(BR2_PACKAGE_HOSTAPD_FORCE_2_10),y)
++HOSTAPD_VERSION = 2.10
++else
+ HOSTAPD_VERSION = 2.11
++endif
+ HOSTAPD_SITE = http://w1.fi/releases
+ HOSTAPD_SUBDIR = hostapd
+ HOSTAPD_CONFIG = $(HOSTAPD_DIR)/$(HOSTAPD_SUBDIR)/.config
+-- 
+2.43.0
+
