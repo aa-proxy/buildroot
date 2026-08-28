@@ -1,0 +1,29 @@
+ctrl_interface=/var/run/hostapd
+interface=wlan0
+# Without this, hostapd may default to the legacy "hostap" (WEXT) driver
+# backend instead of nl80211 - sprdwl_ng only implements cfg80211/nl80211,
+# so hostapd would report AP-ENABLED without ever actually transmitting
+# a beacon.
+driver=nl80211
+
+# Hardcoded to 2.4 GHz / channel 6 instead of {{HW_MODE}}/{{CHANNEL}}: the
+# sprdwl_ng/UWE5622 AP mode doesn't actually transmit on 5 GHz (hostapd
+# completes every nl80211 setup step and reports AP-ENABLED, but no beacon
+# ever goes out over the air - confirmed 2026-08-28), so we can't let the
+# usual iw-list-based auto-detection pick 5 GHz for this board.
+hw_mode=g
+ieee80211be=0
+ieee80211ax=0
+ieee80211ac=0
+ieee80211n=1
+channel=6
+
+auth_algs=1
+wpa=2
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=CCMP
+
+ssid={{SSID}}
+
+wpa_passphrase={{WPA_PASSPHRASE}}
+country_code={{COUNTRY_CODE}}
