@@ -2,6 +2,11 @@ AA_PROXY_RS_VERSION = main
 AA_PROXY_RS_SITE = https://github.com/aa-proxy/aa-proxy-rs.git
 AA_PROXY_RS_SITE_METHOD = git
 
+# openssl backend is now compiled in alongside rustls (runtime choice via
+# config.toml), so openssl-sys needs to find libssl/libcrypto + headers in
+# staging via pkg-config during the cross-build
+AA_PROXY_RS_DEPENDENCIES += openssl
+
 # obtain git hashes for aa-proxy-rs and buildroot
 BUILDROOT_DIR = $(realpath $(TOPDIR)/..)
 BUILDROOT_COMMIT = $(shell git config --global --add safe.directory $(BUILDROOT_DIR) && git -C $(BUILDROOT_DIR) rev-parse HEAD)
