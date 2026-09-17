@@ -20,6 +20,7 @@ on:
           - rpi5
           - radxa03w
           - milkv-duos
+          - milkv-duos-emmc
 
 jobs:
   prepare:
@@ -30,7 +31,7 @@ jobs:
       - id: set
         run: |
           if [ "${{ inputs.board }}" = "all" ] || [ -z "${{ inputs.board }}" ]; then
-            echo 'boards=["aaw1-cs317","aaw2b","aaw3","rpi02w","rpi0w","rpi3a","rpi4","rpi5","radxa03w","milkv-duos"]' >> "$GITHUB_OUTPUT"
+            echo 'boards=["aaw1-cs317","aaw2b","aaw3","rpi02w","rpi0w","rpi3a","rpi4","rpi5","radxa03w","milkv-duos","milkv-duos-emmc"]' >> "$GITHUB_OUTPUT"
           else
             echo 'boards=["${{ inputs.board }}"]' >> "$GITHUB_OUTPUT"
           fi
@@ -68,6 +69,10 @@ jobs:
             fi
           
             tar -cJf "$TAR_NAME" -C "$IMAGE_DIR" download.bin env.img env_r.img idblock.img uboot.img $BOOT_IMG root.img
+          elif [[ "${{ matrix.board }}" == "milkv-duos-emmc" ]]; then
+            TAR_NAME=images/${{ matrix.board }}.tar.xz
+            echo "Compressing entire images/output directory for eMMC..."
+            tar -cJf "$TAR_NAME" -C "$IMAGE_DIR/output" .
           else
             IMG="$IMAGE_DIR/sdcard.img"
             if [[ -f "$IMG" ]]; then
