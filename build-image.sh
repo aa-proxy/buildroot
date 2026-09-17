@@ -87,7 +87,7 @@ mkdir -p ${OUTPUT}
 # Downloading them into the tBOARDet output and setting BR2_TOOLCHAIN_EXTERNAL_PATH
 # doesn't help, because Buildroot still resolves the path as /app/host-tools.
 # So the tools must be placed directly in the root /app directory.
-if [ "${BOARD}" = "milkv-duos" ]; then
+if [[ "${BOARD}" == milkv-duos* ]]; then
     if [ ! -d /app/host-tools ]; then
         sudo git clone --depth=1 https://github.com/milkv-duo/host-tools.git /app/host-tools
         sudo rm -rf /app/host-tools/.git
