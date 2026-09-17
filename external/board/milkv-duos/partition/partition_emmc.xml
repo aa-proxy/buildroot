@@ -4,5 +4,6 @@
 	<!-- Beware that in emmc u-boot environment should be 0x40000 alignment -->
 	<partition label="ENV" size_in_kb="128" file="" />
 	<partition label="ROOTFS" size_in_kb="786560" file="rootfs_ext4.emmc" type="ext4"/>
+	<partition label="USERDATA" size_in_kb="786560" file="userdata_ext4.emmc" type="ext4"/>
 </physical_partition>
 
