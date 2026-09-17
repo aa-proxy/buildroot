@@ -10,8 +10,6 @@ SCRIPTS_DIR="${BR2_EXTERNAL_AA_PROXY_OS_PATH}/scripts"
 OUT_MEMMAP_DIR="${BINARIES_DIR}/memmap"
 PARTITION_XML="${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/milkv-duos/partition/partition_sd.xml"
 BUILDROOT_DIR="$(realpath "$BR2_EXTERNAL_AA_PROXY_OS_PATH/..")"
-FSBL_BUILD_DIR="${BUILD_DIR}/fsbl"
-RTOS_BUILD_DIR="${BUILD_DIR}/freertos*"
 
 # final steps to create a proper bootable SD card image
 cd ${BINARIES_DIR}
