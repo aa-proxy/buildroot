@@ -8,7 +8,15 @@ set -x
 MEM_DEFS="${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/milkv-duos/memmap.py"
 SCRIPTS_DIR="${BR2_EXTERNAL_AA_PROXY_OS_PATH}/scripts"
 OUT_MEMMAP_DIR="${BINARIES_DIR}/memmap"
-PARTITION_XML="${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/milkv-duos/partition/partition_sd.xml"
+BOARD="$(realpath "$BUILD_DIR/..")"
+case "${BOARD}" in
+    *-emmc)
+        PARTITION_XML="${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/milkv-duos/partition/partition_emmc.xml"
+        ;;
+    *)
+        PARTITION_XML="${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/milkv-duos/partition/partition_sd.xml"
+        ;;
+esac
 BUILDROOT_DIR="$(realpath "$BR2_EXTERNAL_AA_PROXY_OS_PATH/..")"
 FSBL_BUILD_DIR="${BUILD_DIR}/fsbl"
 RTOS_BUILD_DIR="${BUILD_DIR}/freertos*"
