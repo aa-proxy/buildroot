@@ -8,7 +8,7 @@
 
 DAEMON="brcm_patchram_plus"
 PIDFILE="/var/run/$DAEMON.pid"
-BT_FIRMWARE="@BT_FIRMWARE_PATH@"
+BT_FIRMWARE_DIR="@BT_FIRMWARE_DIR@"
 BT_UART_DEV="/dev/@BT_UART_DEV@"
 BT_UART_BAUDRATE="@BT_UART_BAUDRATE@"
 
@@ -17,6 +17,32 @@ RETVAL=0
 case "$1" in
 	start)
 		printf "Starting $DAEMON: "
+
+		# The patchram is named after the module, which the board does not
+		# pin down: these boards are populated with whichever BCM43455/43456
+		# module was available. bcmdhd exports the SDIO chip id and revision
+		# it probed, and that is the same pair it picks the Wi-Fi firmware
+		# from (chip_name_map[] in dhd_config.c), so the two cannot disagree.
+		#
+		# The Wi-Fi driver loads at boot, but has to finish its SDIO probe
+		# before these appear.
+		for _ in 1 2 3 4 5 6 7 8 9 10; do
+			[ -r /sys/bcm-dhd/chip ] && break
+			sleep 1
+		done
+
+		CHIP="$(cat /sys/bcm-dhd/chip 2>/dev/null)"
+		CHIPREV="$(cat /sys/bcm-dhd/chiprev 2>/dev/null)"
+		case "$CHIP:$CHIPREV" in
+			0xa9be:0x6) CHIP_NAME="ap6254" ;;
+			0x4345:0x6) CHIP_NAME="ap6255" ;;
+			0x4345:0x9) CHIP_NAME="ap6256" ;;
+			*)
+				echo "FAIL (no patchram for chip '$CHIP' rev '$CHIPREV')"
+				exit 1
+				;;
+		esac
+		BT_FIRMWARE="$BT_FIRMWARE_DIR/$CHIP_NAME.hcd"
 
 		# The controller comes up soft-blocked, bluetoothd cannot open it.
 		/usr/sbin/rfkill unblock bluetooth
