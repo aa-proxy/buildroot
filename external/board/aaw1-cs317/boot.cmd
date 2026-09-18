@@ -8,7 +8,13 @@ setenv verbosity "4"
 
 echo "Running boot script"
 
-setenv bootargs "console=${console} rw root=/dev/mmcblk0p${bootpart} rootfstype=ext4 init=/sbin/init rootwait systemd.machine_id=${cpuid#}"
+# No init= here on purpose. CONFIG_CMDLINE_EXTEND seeds the command line with
+# the built-in string and appends these after it, so an init= here would be the
+# last one parsed and would win over the init=/etc/overlay_init that
+# board/aaw-common/kernel.config.part sets. overlay_init mounts /data, handles
+# factory reset and the pending restore, sets up the /etc and /var overlays and
+# then execs /sbin/init itself.
+setenv bootargs "console=${console} rw root=/dev/mmcblk0p${bootpart} rootfstype=ext4 rootwait systemd.machine_id=${cpuid#}"
 
 load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} ${prefix}${kernelimg}
 
