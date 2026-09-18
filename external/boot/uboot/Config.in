@@ -13,6 +13,50 @@ config BR2_TARGET_UBOOT_ROCKCHIP_IDBLOCK
       tools. Those need "make.sh --spl" instead, which packs the
       download.bin and idblock.img pair those tools expect.
 
+config BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER
+    bool "Build a raw Rockchip idbloader.img"
+    depends on BR2_TARGET_UBOOT_ROCKCHIP
+    help
+      Wrap the rkbin DDR init blob with "mkimage -T rksd" and append the
+      miniloader, producing idbloader.img: the ID block the BootROM reads
+      from sector 0x40 of eMMC or SD.
+
+      This is the same thing "make.sh --idblock" packs, for the older
+      Rockchip U-Boot trees whose make.sh has no such sub-command.
+
+config BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER_SOC
+    string "SoC name passed to mkimage -n"
+    depends on BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER
+    help
+      One of the names in the U-Boot tree's tools/rkcommon.c, e.g. "rk3308".
+
+config BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER_RKBIN_REPO
+    string "GitHub owner/repo to take the idbloader blobs from"
+    depends on BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER
+    help
+      Leave empty to use the rkbin the package already downloads. Set it
+      when a board needs blobs from a different rkbin than the one that
+      supplies tools/mkimage and the trust images, e.g. "radxa/rkbin" for
+      the rk3308 builds that upstream has since dropped. Needs
+      BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER_RKBIN_VERSION set as well.
+
+config BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER_RKBIN_VERSION
+    string "git revision of the above"
+    depends on BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER
+
+config BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER_DDR_BIN
+    string "DDR init blob"
+    depends on BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER
+    help
+      Relative to whichever rkbin the blobs come from, or an absolute path
+      for a board that has to ship its own.
+
+config BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER_MINILOADER_BIN
+    string "miniloader blob"
+    depends on BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER
+    help
+      Relative to whichever rkbin the blobs come from, or an absolute path.
+
 config BR2_TARGET_UBOOT_ROCKCHIP_ENV
     bool "Enable Rockchip U-Boot env"
     depends on BR2_TARGET_UBOOT_ROCKCHIP

@@ -1,0 +1,70 @@
+From: Chiel Prins <chiel@cpeb.it>
+Subject: [PATCH] usb: configfs: give each gadget its own android device
+
+android_device_create() names the device it creates "android0" for every
+gadget, so only the first gadget in a configfs tree can be created. The
+second one fails in device_create():
+
+  kobject_add_internal failed for android0 with -EEXIST, don't try to
+  register things with the same name in the same directory.
+
+/etc/init.d/S92usb_gadget sets up two: "accessory" for the Android Auto
+AOA link and "default" for MTP. The accessory one is created first and
+wins, and everything after it fails:
+
+  mkdir: can't create directory 'default': Cannot allocate memory
+  mount: mounting mtp on /dev/ffs-mtp failed: No such device
+
+Number the devices instead, so each gadget gets its own, and keep the
+first one as the global android_device that create_function_device() and
+the uevent path use. struct gadget_info already carries the dev pointer
+for this, it was simply never used.
+
+This is the 4.4 backport of what the 4.19 rockchip tree already does, and
+that is why the cs317 does not show the problem.
+
+Signed-off-by: Chiel Prins <chiel@cpeb.it>
+---
+--- a/drivers/usb/gadget/configfs.c	2026-09-18 17:58:09.949161469 +0200
++++ b/drivers/usb/gadget/configfs.c	2026-09-18 17:58:09.967190608 +0200
+@@ -22,6 +22,7 @@
+ static struct class *android_class;
+ static struct device *android_device;
+ static int index;
++static int gadget_index;
+ 
+ struct device *create_function_device(char *name)
+ {
+@@ -1617,21 +1618,23 @@
+ 	struct device_attribute *attr;
+ 
+ 	INIT_WORK(&gi->work, android_work);
+-	android_device = device_create(android_class, NULL,
+-				MKDEV(0, 0), NULL, "android0");
+-	if (IS_ERR(android_device))
+-		return PTR_ERR(android_device);
+-
+-	dev_set_drvdata(android_device, gi);
++	gi->dev = device_create(android_class, NULL,
++				MKDEV(0, 0), NULL, "android%d", gadget_index++);
++	if (IS_ERR(gi->dev))
++		return PTR_ERR(gi->dev);
++
++	dev_set_drvdata(gi->dev, gi);
++	if (!android_device)
++		android_device = gi->dev;
+ 
+ 	attrs = android_usb_attributes;
+ 	while ((attr = *attrs++)) {
+ 		int err;
+ 
+-		err = device_create_file(android_device, attr);
++		err = device_create_file(gi->dev, attr);
+ 		if (err) {
+-			device_destroy(android_device->class,
+-				       android_device->devt);
++			device_destroy(gi->dev->class,
++				       gi->dev->devt);
+ 			return err;
+ 		}
+ 	}

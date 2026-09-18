@@ -1,0 +1,52 @@
+software =
+{
+	version = "0.0.0";
+
+	aaw1-cs307 = {
+		hardware-compatibility: [ "1.0" ];
+		stable : {
+            part1 : {
+                images: (
+                    {
+                        filename = "rootfs.ext4";
+                        type = "raw";
+                        compressed = "zlib";
+                        installed-directly = true;
+                        device = "/dev/mmcblk0p1";
+                    }
+                );
+                uboot: (
+                    {
+                        name = "bootpart";
+                        value = "1";
+                    },
+                    {
+                        name = "upgrade_available";
+                        value = "1";
+                    }
+                );
+            };
+            part2 : {
+                images: (
+                    {
+                        filename = "rootfs.ext4";
+                        type = "raw";
+                        compressed = "zlib";
+                        installed-directly = true;
+                        device = "/dev/mmcblk0p2";
+                    }
+                );
+                uboot: (
+                    {
+                        name = "bootpart";
+                        value = "2";
+                    },
+                    {
+                        name = "upgrade_available";
+                        value = "1";
+                    }
+                );
+            };
+        };
+	}
+}

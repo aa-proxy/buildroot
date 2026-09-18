@@ -1,0 +1,22 @@
+From: Chiel Prins <chiel@cpeb.it>
+Subject: [PATCH] rkflash: include linux/string.h for memset()
+
+sfc_nor.c calls memset() without including <linux/string.h>. GCC used to
+let that through with a warning, but GCC 14 makes an implicit function
+declaration an error, so the driver no longer builds:
+
+  drivers/rkflash/sfc_nor.c:574:9: error: implicit declaration of
+  function 'memset' [-Werror=implicit-function-declaration]
+
+Signed-off-by: Chiel Prins <chiel@cpeb.it>
+---
+--- a/drivers/rkflash/sfc_nor.c	2026-09-18 17:17:37.081815652 +0200
++++ b/drivers/rkflash/sfc_nor.c	2026-09-18 17:17:37.126825263 +0200
+@@ -5,6 +5,7 @@
+ #include <linux/bug.h>
+ #include <linux/delay.h>
+ #include <linux/kernel.h>
++#include <linux/string.h>
+ 
+ #include "rkflash_debug.h"
+ #include "sfc_nor.h"

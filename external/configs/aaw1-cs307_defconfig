@@ -1,0 +1,62 @@
+# The cs307 is an RK3308 (arm64, cortex-a35), unlike the armv7 boards
+# common_aaw.part is written for. The defconfig merger concatenates the parts
+# and keeps the last value per key, and drops "# ... is not set" lines, so the
+# armv7 choices have to be turned off by name here.
+BR2_arm=n
+BR2_cortex_a7=n
+BR2_ARM_FPU_NEON_VFPV4=n
+BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_ARMV7_EABIHF_GLIBC_STABLE=n
+BR2_aarch64=y
+BR2_cortex_a35=y
+BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_AARCH64_GLIBC_STABLE=y
+
+BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="3498ed73085bf50b7f91c37657067155a694b26e"
+BR2_LINUX_KERNEL_USE_DEFCONFIG=n
+BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
+BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_AA_PROXY_OS_PATH)/board/aaw1-cs307/kernel.config"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3308-cs307-e2w3"
+BR2_LINUX_KERNEL_IMAGE=y
+BR2_LINUX_KERNEL_INSTALL_TARGET=y
+
+# This 4.4 tree predates GCC 14: it has a missing <linux/string.h>, and its
+# scripts/gcc-wrapper.py fails the build on warnings the compiler of the day
+# never emitted. See the patches for the detail.
+BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_AA_PROXY_OS_PATH)/board/aaw1-cs307/patches"
+BR2_TARGET_UBOOT_CUSTOM_REPO_VERSION="aa55bdea8d4544d37b053fa29b0fdfef3cd242a5"
+BR2_TARGET_UBOOT_BOARD_DEFCONFIG="rock-pi-s-rk3308"
+BR2_TARGET_UBOOT_ROCKCHIP_BOOT_SCRIPT=y
+BR2_TARGET_UBOOT_ROCKCHIP_BOOT_SCRIPT_FILE="$(BR2_EXTERNAL_AA_PROXY_OS_PATH)/board/aaw1-cs307/boot.cmd"
+BR2_TARGET_UBOOT_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_AA_PROXY_OS_PATH)/board/common/uboot/fragments/bootdelay.fragment $(BR2_EXTERNAL_AA_PROXY_OS_PATH)/board/aaw1-cs307/uboot.fragment"
+
+# This U-Boot tree predates "make.sh --idblock", so the ID block the BootROM
+# reads from sector 0x40 is assembled from the rkbin blobs instead.
+#
+# The blobs come from radxa's rkbin, the same tree and revision meta-aawireless
+# pinned for this board. Rockchip's rkbin dropped every rk3308 uart0 DDR build
+# and the v1.26 series years ago, and radxa's miniloader is the one built for
+# this eMMC port. radxa ships no tools/mkimage, so that and the trust images
+# still come from the rkbin the package downloads anyway.
+#
+# The DDR build is 589MHz v1.26, matching what the Rockchip loader that brings
+# this board up reports on the console:
+#   DDR Version V1.26 / 589MHz / DDR3 / Col=10 Bank=8 Row=14 Size=256MB
+# uart0 is the cs307's console, so it also makes the DDR stage visible.
+BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER=y
+BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER_SOC="rk3308"
+BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER_RKBIN_REPO="radxa/rkbin"
+BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER_RKBIN_VERSION="fb4ce829b87a9a5738ff6ebc9951768c86ad75c1"
+BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER_DDR_BIN="bin/rk33/rk3308_ddr_589MHz_uart0_m0_v1.26.bin"
+BR2_TARGET_UBOOT_ROCKCHIP_IDBLOADER_MINILOADER_BIN="bin/rk33/rk3308_miniloader_emmc_port_support_sd_20190717.bin"
+
+BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_AA_PROXY_OS_PATH)/rootfs_overlay $(BR2_EXTERNAL_AA_PROXY_OS_PATH)/board/aaw-common/rootfs_overlay $(BR2_EXTERNAL_AA_PROXY_OS_PATH)/board/aaw1-cs307/rootfs_overlay"
+BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_AA_PROXY_OS_PATH)/board/aaw1-cs307/post-image.sh"
+BR2_TARGET_GENERIC_GETTY_PORT="ttyS0"
+BR2_TARGET_ROOTFS_EXT2=y
+BR2_TARGET_ROOTFS_EXT2_4=y
+BR2_TARGET_ROOTFS_EXT2_SIZE="200M"
+
+# Packages
+BR2_PACKAGE_RKWIFIBT_AP625X=y
+BR2_PACKAGE_RKWIFIBT_BT_UART_DEV="ttyS4"
+BR2_PACKAGE_RKWIFIBT_BT_UART_BAUDRATE="1500000"
+BR2_PACKAGE_AA_PROXY_RS_IO_URING=n

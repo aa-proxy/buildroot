@@ -14,6 +14,7 @@ usage() {
     echo "Usage: $(basename "$0") <machine> <image>"
     echo
     echo "Machines:"
+    echo "    aaw1-cs307   eMMC, takes the sdcard.img file"
     echo "    aaw1-cs317   eMMC, takes the sdcard.img file"
     echo "    aaw2b        SPI NAND, takes the images directory"
     echo "    aaw3         SPI NAND, takes the images directory"
@@ -29,6 +30,45 @@ wait_for_device() {
   done
 }
 
+# upgrade_tool exits 0 even when a transfer fails, printing e.g.
+# "Write LBA failed!", so the output has to be inspected rather than the
+# status. Stream it so the progress bar still shows.
+run_upgrade_tool() {
+  local log rc=0
+  log=$(mktemp)
+  "$UPGRADE_TOOL" "$@" | tee "$log"
+  if grep -qiE "failed|error" "$log"; then
+    rc=1
+  fi
+  rm -f "$log"
+  return $rc
+}
+
+# upgrade_tool reports Mode=Maskrom both for the bare BootROM and, on RK3308,
+# for a usbplug loader it has already accepted -- so the mode alone cannot say
+# whether a loader still has to be sent, and "db" fails once one is running.
+# The BootROM reports an empty SerialNo; a running loader fills it in.
+needs_loader() {
+  "$UPGRADE_TOOL" ld | grep "Mode=Maskrom" | grep -qE "SerialNo=[[:space:]]*$"
+}
+
+# The loader enumerates on USB before it has finished initialising the eMMC --
+# the console shows DDR training and SdmmcInit still to come. A transfer issued
+# in that window dies with "can't read flash id from device", and the loader
+# stays wedged afterwards, so it is worth waiting for the flash to actually
+# answer a read before trusting it.
+wait_for_flash() {
+  local i
+  for i in $(seq 1 20); do
+    if run_upgrade_tool rl 0 1 /dev/null >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 1
+  done
+  echo "Error: the loader came up but its flash never became readable." >&2
+  return 1
+}
+
 # eMMC/SD boards: the whole GPT image goes to LBA 0 with upgrade_tool.
 flash_upgrade_tool() {
   local loader_bin="$SCRIPT_DIR/${LOADER}_loader.bin"
@@ -38,17 +78,28 @@ flash_upgrade_tool() {
     exit 1
   fi
 
-  # The loader is only accepted while the BootROM sits in Maskrom mode. In
-  # Loader mode one is already running and upgrade_tool rejects the command.
-  if "$UPGRADE_TOOL" ld | grep -q "Mode=Maskrom"; then
+  if needs_loader; then
     echo "Device is in Maskrom mode, uploading loader."
-    "$UPGRADE_TOOL" db "$loader_bin"
+    if ! run_upgrade_tool db "$loader_bin"; then
+      echo "Error: uploading the loader failed." >&2
+      exit 1
+    fi
     echo "Waiting for device to re-enumerate."
     wait_for_device
+    echo "Waiting for the flash to come up."
+    if ! wait_for_flash; then
+      echo "Power-cycle the board and retry." >&2
+      exit 1
+    fi
+  else
+    echo "A loader is already running, skipping the loader upload."
   fi
 
-  "$UPGRADE_TOOL" wl 0 "$IMAGE"
-  "$UPGRADE_TOOL" rd
+  if ! run_upgrade_tool wl 0 "$IMAGE"; then
+    echo "Error: writing the image failed. Power-cycle the board and retry." >&2
+    exit 1
+  fi
+  run_upgrade_tool rd
 }
 
 # SPI NAND boards: rkdownload.sh reads the partition table out of env.img and
@@ -64,6 +115,14 @@ flash_rkdownload() {
 }
 
 case $1 in
+aaw1-cs307*)
+  # The BootROM and the usbplug loader both enumerate as 330e. Note this is
+  # not the 0x330d that rk3308_common.h sets CONFIG_ROCKUSB_G_DNL_PID to;
+  # that one is U-Boot's own rockusb gadget.
+  USB_PID="330e"  # RK3308
+  LOADER=cs307
+  NAND=false
+  ;;
 aaw1-cs317*)
   USB_PID="110b"  # RV1109
   LOADER=cs317

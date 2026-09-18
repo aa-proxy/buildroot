@@ -1,0 +1,14 @@
+# rock-pi-s-rk3308_defconfig puts the debug UART on 0xFF0C0000, which is uart2.
+# The cs307 has its console on uart0 (0xff0a0000 in rk3308.dtsi; the dtsi only
+# enables uart0 and uart4, and uart4 is the Bluetooth link), so as shipped
+# U-Boot prints to a pin that is not brought out. Point it at uart0 so the
+# pre-kernel chain is visible on the same line as the kernel console.
+CONFIG_DEBUG_UART_BASE=0xFF0A0000
+
+# rock-pi-s-rk3308_defconfig turns this off, against the Kconfig default of y,
+# and rv1126 (cs317) leaves it on. Without it U-Boot passes no "serial-number"
+# property to the kernel, so /sys/firmware/devicetree/base/serial-number does
+# not exist -- and aa-proxy-rs derives its Bluetooth alias from the last 6
+# characters of that, falling back to a bare "aa-proxy" for every unit. Enable
+# it so each board advertises aa-proxy-XXXXXX, as the cs317 already does.
+CONFIG_PASS_DEVICE_SERIAL_BY_FDT=y

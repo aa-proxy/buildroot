@@ -10,6 +10,7 @@ on:
         type: choice
         options:
           - all
+          - aaw1-cs307
           - aaw1-cs317
           - aaw2b
           - aaw3
@@ -31,7 +32,7 @@ jobs:
       - id: set
         run: |
           if [ "${{ inputs.board }}" = "all" ] || [ -z "${{ inputs.board }}" ]; then
-            echo 'boards=["aaw1-cs317","aaw2b","aaw3","rpi02w","rpi0w","rpi3a","rpi4","rpi5","radxa03w","milkv-duos","milkv-duos-emmc"]' >> "$GITHUB_OUTPUT"
+            echo 'boards=["aaw1-cs307","aaw1-cs317","aaw2b","aaw3","rpi02w","rpi0w","rpi3a","rpi4","rpi5","radxa03w","milkv-duos","milkv-duos-emmc"]' >> "$GITHUB_OUTPUT"
           else
             echo 'boards=["${{ inputs.board }}"]' >> "$GITHUB_OUTPUT"
           fi

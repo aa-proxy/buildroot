@@ -1,0 +1,20 @@
+From: Chiel Prins <chiel@cpeb.it>
+Subject: [PATCH] arm64: dts: rk3308-cs307-e2w3: set model to AAWireless 1
+
+The board reports itself as the Radxa reference design it derives from,
+which is what shows up in /proc/device-tree/model and anywhere userspace
+reads the device tree model. Name it for the product instead.
+
+Signed-off-by: Chiel Prins <chiel@cpeb.it>
+---
+--- a/arch/arm64/boot/dts/rockchip/rk3308-cs307-e2w3.dts	2026-09-18 19:47:04.379292886 +0200
++++ b/arch/arm64/boot/dts/rockchip/rk3308-cs307-e2w3.dts	2026-09-18 19:51:39.001234407 +0200
+@@ -3,7 +3,7 @@
+ #include "rk3308-cs307.dtsi"
+ 
+ / {
+-	model = "Radxa CS307-E2W3";
++	model = "AAWireless 1";
+ };
+ 
+ &wireless_wlan {
