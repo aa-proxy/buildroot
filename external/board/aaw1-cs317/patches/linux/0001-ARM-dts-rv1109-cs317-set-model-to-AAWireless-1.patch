@@ -1,0 +1,20 @@
+From: Chiel Prins <chiel@cpeb.it>
+Subject: [PATCH] ARM: dts: rv1109-cs317: set model to AAWireless 1
+
+The board reports itself as the Radxa reference design it derives from,
+which is what shows up in /proc/device-tree/model and anywhere userspace
+reads the device tree model. Name it for the product instead.
+
+Signed-off-by: Chiel Prins <chiel@cpeb.it>
+---
+--- a/arch/arm/boot/dts/rv1109-cs317.dts	2026-09-18 19:47:04.387292984 +0200
++++ b/arch/arm/boot/dts/rv1109-cs317.dts	2026-09-18 19:51:39.001282379 +0200
+@@ -7,7 +7,7 @@
+ #include <dt-bindings/input/input.h>
+ 
+ / {
+-	model = "Radxa CS317 Board";
++	model = "AAWireless 1";
+ 	compatible = "rockchip,rv1109-CS317", "rockchip,rv1126";
+ 
+ 	dummy_codec: dummy-codec {
