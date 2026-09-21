@@ -31,18 +31,16 @@ ifeq ($(findstring milkv-duos,$(CONFIG_DIR)),milkv-duos)
 AA_PROXY_RS_CARGO_ENV += PATH=/app/buildroot/output/milkv-duos/build/riscv/bin:$(BR_PATH)
 endif
 
-# aa-proxy-rs defaults to the wasm-scripting + io-uring features. Guard on the
-# package itself: with it disabled the IO_URING symbol is absent entirely, and
-# an unguarded "!= y" would otherwise select features for a board that never
-# builds this package.
+# aa-proxy-rs defaults to the wasm-scripting + io-uring features.
+# io-uring is intentionally disabled on all platforms for now.
+# Keep the guard on the package itself so the options are not selected
+# for boards that do not build this package.
 ifeq ($(BR2_PACKAGE_AA_PROXY_RS),y)
 ifeq ($(RUSTC_TARGET_NAME),arm-unknown-linux-gnueabihf)
-# disable wasm-scripting on armv6 (wasmtime doesn't support it); this drops
-# io-uring too, which armv6 boards have not needed so far
+# disable wasm-scripting on armv6 (wasmtime doesn't support it)
 AA_PROXY_RS_CARGO_BUILD_OPTS += --no-default-features
-else ifneq ($(BR2_PACKAGE_AA_PROXY_RS_IO_URING),y)
-# io_uring only exists from kernel 5.1; on 4.19 tokio_uring::start() panics with
-# ENOSYS before the proxy gets going. Keep wasm-scripting, drop io-uring.
+else
+# keep wasm-scripting, but disable io-uring
 AA_PROXY_RS_CARGO_BUILD_OPTS += --no-default-features --features wasm-scripting
 endif
 endif
