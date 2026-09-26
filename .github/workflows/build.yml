@@ -89,11 +89,13 @@ jobs:
             cp -f "$UPDATE_IMG" images/${{ matrix.board }}.swu
           fi
 
-      - name : Upload logs
+      - name: Upload logs
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.board }}-logs
           path: buildroot/output/${{ matrix.board }}/build.log
+          if-no-files-found: warn
 
       - name: Upload AAW artifact
         if: matrix.board == 'aaw2b' || matrix.board == 'aaw3'
