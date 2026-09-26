@@ -71,7 +71,7 @@ jobs:
           
             tar -cJf "$TAR_NAME" -C "$IMAGE_DIR" download.bin env.img env_r.img idblock.img uboot.img $BOOT_IMG root.img
           elif [[ "${{ matrix.board }}" == "milkv-duos-emmc" ]]; then
-            TAR_NAME=images/${{ matrix.board }}.tar.xz
+            TAR_NAME=images/${{ matrix.board }}-images.tar.xz
             echo "Compressing entire images/output directory for eMMC..."
             tar -cJf "$TAR_NAME" -C "$IMAGE_DIR/output" .
           else
@@ -98,7 +98,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload AAW artifact
-        if: matrix.board == 'aaw2b' || matrix.board == 'aaw3'
+        if: matrix.board == 'aaw2b' || matrix.board == 'aaw3' || matrix.board == 'milkv-duos-emmc'
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.board }}-images
