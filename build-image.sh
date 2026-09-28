@@ -132,6 +132,10 @@ fi
 
 # cd to output directory
 cd "${OUTPUT}" || exit 1
+# symlink milkv-duo variants (for build scripts)
+if [[ "${BOARD}" == "milkv-duos-emmc" ]]; then
+    ln -s milkv-duos-emmc ../milkv-duos
+fi
 
 ##
 # Shell or build image
