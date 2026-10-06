@@ -34,8 +34,8 @@
 		compatible = "gpio-leds";
 
 		led-0 {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_GREEN>;
+			/* driven by aa-proxy-rs: /sys/class/leds/aa-proxy */
+			label = "aa-proxy";
 			gpios = <&pio 2 13 GPIO_ACTIVE_HIGH>; /* PC13 */
 		};
 	};
