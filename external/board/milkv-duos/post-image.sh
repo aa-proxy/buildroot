@@ -23,8 +23,15 @@ esac
 # final steps to create a proper bootable SD card image / eMMC
 cd ${BINARIES_DIR}
 lzma -c -9 -f -k Image > Image.lzma
+
 # Copy definitions first, since the build expects paths relative to this file
 cp ${BR2_EXTERNAL_AA_PROXY_OS_PATH}/board/milkv-duos/u-boot/multi.its .
+case "${BOARD}" in
+    *-emmc) FDT_BOARD=sg2000_milkv_duos_musl_riscv64_emmc ;;
+    *)      FDT_BOARD=sg2000_milkv_duos_musl_riscv64_sd ;;
+esac
+sed -i "s/sg2000_milkv_duos_musl_riscv64_sd/${FDT_BOARD}/g" multi.its
+
 ${BUILD_DIR}/uboot*/tools/mkimage -f multi.its -r boot.itb
 mkdir -p rawimages output
 
