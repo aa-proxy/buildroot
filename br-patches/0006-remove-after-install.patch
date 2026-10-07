@@ -12,7 +12,9 @@ directories after installation
     - '.files-list*' (used for legal-info and size tracking)
     - '.applied_patches_list' (tracks applied package patches)
 - Add a clear trace output: "rmwork: removing <pkg> build files".
-- Skip cleaning for key system components: freertos, uboot, linux-custom.
+- Skip cleaning for key system components: freertos, uboot and the kernel
+  (linux-custom, or linux-<version> when built from a release tarball; the
+  out-of-tree kernel modules need the kernel build tree).
 ---
  package/pkg-generic.mk | 12 ++++++++++++
  1 file changed, 12 insertions(+)
@@ -26,8 +28,8 @@ index dd440e4062..47c4acac7a 100644
  	@$(call check_bin_arch)
  	$(Q)touch $@
 +	@if [ "$(RM_WORK)" = "y" ]; then \
-+		if echo "$(@D)" | grep -Eq "freertos|uboot|linux-custom"; then \
-+			echo "skip rm (freertos, uboot or linux-custom)"; \
++		if echo "$(notdir $(@D))" | grep -Eq "^(freertos|uboot|linux-custom|linux-[0-9])"; then \
++			echo "skip rm (freertos, uboot or linux kernel)"; \
 +		else \
 +			echo "rmwork: removing $(notdir $(@D)) build files"; \
 +			find "$(@D)" -mindepth 1 -maxdepth 1 \
