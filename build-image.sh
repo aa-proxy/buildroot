@@ -144,11 +144,14 @@ if [ "$SHELL_MODE" -eq 1 ]; then
     exec /bin/bash
 else
     BUILD_LOG="${OUTPUT}/build.log"
+    # Without pipefail the pipelines below return the exit status of their
+    # last command (tee/grep), hiding make failures
+    set -o pipefail
     # Launch buildroot build and redirect output build.log
     if [[ ${BUILD_VERBOSE} -eq 1 ]]; then
         # Verbose mode: display full build output and save to log
         # shellcheck disable=SC2086
-        make -j "$(nproc --all)" | tee "${BUILD_LOG}" || exit 1
+        make -j "$(nproc --all)" 2>&1 | tee "${BUILD_LOG}" || exit 1
     else
         # Normal mode:
         #   1. Run "make"
@@ -158,7 +161,7 @@ else
         # shellcheck disable=SC2086
         make -j "$(nproc --all)" 2>&1 \
         | tee "${BUILD_LOG}" \
-        | grep --line-buffered '>>>' \
+        | { grep --line-buffered '>>>' || true; } \
         || {
             echo "=== Buildroot build failed, last 200 lines of ${BUILD_LOG}: ==="
             tail -200 "${BUILD_LOG}"
