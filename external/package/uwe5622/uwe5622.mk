@@ -36,11 +36,14 @@ endif
 # skips BT calibration (comp_id, feature_set, RF power tables) instead of
 # failing, which is why bluetoothctl reports Manufacturer: 0x0000 instead
 # of 0x01ec (Spreadtrum) and the controller never advertises LE support.
+# Pinned to a commit so the hashes in uwe5622.hash stay valid.
+UWE5622_FIRMWARE_VERSION = 3cdd9fa83384b7f42adae6b35e7411e0f27243d7
+UWE5622_FIRMWARE_SITE = https://raw.githubusercontent.com/armbian/firmware/$(UWE5622_FIRMWARE_VERSION)
 UWE5622_EXTRA_DOWNLOADS = \
-	https://raw.githubusercontent.com/armbian/firmware/master/uwe5622/wcnmodem.bin \
-	https://raw.githubusercontent.com/armbian/firmware/master/uwe5622/wifi_2355b001_1ant.ini \
-	https://raw.githubusercontent.com/armbian/firmware/master/bt_configure_pskey.ini \
-	https://raw.githubusercontent.com/armbian/firmware/master/bt_configure_rf.ini
+	$(UWE5622_FIRMWARE_SITE)/uwe5622/wcnmodem.bin \
+	$(UWE5622_FIRMWARE_SITE)/uwe5622/wifi_2355b001_1ant.ini \
+	$(UWE5622_FIRMWARE_SITE)/bt_configure_pskey.ini \
+	$(UWE5622_FIRMWARE_SITE)/bt_configure_rf.ini
 
 define UWE5622_INSTALL_FIRMWARE
 	$(INSTALL) -D -m 0644 $(UWE5622_DL_DIR)/wcnmodem.bin \
