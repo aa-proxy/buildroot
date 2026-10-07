@@ -2,7 +2,7 @@
 
 ROOTFS="$(swupdate -g)"
 
-if [ "$ROOTFS" = "/dev/mmcblk1p2" ]; then
+if [ "$ROOTFS" = "/dev/mmcblk0p2" ]; then
     SELECTION="stable,part2"
 else
     SELECTION="stable,part1"
