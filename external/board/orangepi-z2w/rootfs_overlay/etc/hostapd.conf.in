@@ -1,23 +1,15 @@
 ctrl_interface=/var/run/hostapd
 interface=wlan0
-# Without this, hostapd may default to the legacy "hostap" (WEXT) driver
-# backend instead of nl80211 - sprdwl_ng only implements cfg80211/nl80211,
-# so hostapd would report AP-ENABLED without ever actually transmitting
-# a beacon.
+# nl80211 is the only backend implemented by the WiFi driver of the
+# Unisoc (ex-Spreadtrum) UWE5622 WiFi/BT combo chip
+# (kernel module sprdwl_ng).
 driver=nl80211
 
-# 5 GHz AP mode was thought broken on sprdwl_ng/UWE5622 (hostapd
-# reported AP-ENABLED but never actually transmitted a beacon), so
-# this used to be hardcoded to 2.4 GHz/channel 6. Root cause found
-# 2026-08-28: it's a hostapd 2.11+ regression on this driver, not a
-# hardware limitation - fixed by forcing hostapd 2.10 for this board
-# (BR2_PACKAGE_HOSTAPD_FORCE_2_10 in
-# external/configs/orangepi_zero2w_defconfig). Auto-detection can
-# safely pick 5 GHz again.
+# 5 GHz needs the DS Params patch on hostapd 2.11
+# (board/orangepi-z2w/patches/hostapd): the UWE5622 firmware sends no
+# 5 GHz beacon without that element.
 #
-# No ieee80211be line here: hostapd 2.10 (forced for this board, see
-# above) predates the EHT/WiFi 7 config keyword entirely and hard-
-# errors on unknown directives ("unknown configuration item").
+# No ieee80211be line: the chip has no WiFi 7 support.
 hw_mode={{HW_MODE}}
 ieee80211ax={{AX_MODE}}
 ieee80211ac={{AC_MODE}}
