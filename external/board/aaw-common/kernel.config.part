@@ -1,3 +1,5 @@
+CONFIG_CMDLINE="user_debug=31 init=/etc/overlay_init"
+
 # Add f_accessory, f_fs and mass_storage functions for usb gadget
 CONFIG_USB_GADGET=y
 CONFIG_USB_CONFIGFS=y
