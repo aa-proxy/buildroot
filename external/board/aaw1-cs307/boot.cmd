@@ -1,4 +1,6 @@
 setenv load_addr "0x05000000"
+setenv kernel_addr_r "0x00800000"
+setenv fdt_addr_r "0x04000000"
 
 # defaults
 setenv kernelimg "Image"

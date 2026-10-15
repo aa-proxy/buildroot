@@ -26,7 +26,7 @@ case "$1" in
 		#
 		# The Wi-Fi driver loads at boot, but has to finish its SDIO probe
 		# before these appear.
-		for _ in 1 2 3 4 5 6 7 8 9 10; do
+		for _ in $(seq 1 15); do
 			[ -r /sys/bcm-dhd/chip ] && break
 			sleep 1
 		done
@@ -44,8 +44,16 @@ case "$1" in
 		esac
 		BT_FIRMWARE="$BT_FIRMWARE_DIR/$CHIP_NAME.hcd"
 
+		# Ensure Wi-Fi interface has finished async firmware load before S40network runs
+		for _ in $(seq 1 15); do
+			[ -d /sys/class/net/wlan0 ] && break
+			sleep 1
+		done
+		/usr/sbin/rfkill unblock wlan 2>/dev/null || true
+
 		# The controller comes up soft-blocked, bluetoothd cannot open it.
 		/usr/sbin/rfkill unblock bluetooth
+		usleep 200000 2>/dev/null || sleep 1
 
 		# Give the controller a stable BD address. ethaddr lives in the U-Boot
 		# environment, so it survives reflashing; fall back to a random address
@@ -69,6 +77,7 @@ case "$1" in
 		printf "Stopping $DAEMON: "
 		start-stop-daemon -K -q -p "$PIDFILE"
 		RETVAL=$?
+		/usr/sbin/rfkill block bluetooth 2>/dev/null || true
 		[ $RETVAL = 0 ] && echo "OK" || echo "FAIL"
 		;;
 	restart)
