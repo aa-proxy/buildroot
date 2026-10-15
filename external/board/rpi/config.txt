@@ -3,6 +3,9 @@ start_file=start4.elf
 fixup_file=fixup4.dat
 
 [pi5]
+# Enable the Active Cooler / case fan (kernel pwm-fan driver)
+dtparam=cooling_fan=on
+
 # Underclock CPU
 arm_freq=1500
 arm_freq_min=500
