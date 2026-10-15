@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AA-Proxy <noreply@aa-proxy.local>
+Date: Thu, 8 Oct 2026 18:45:00 +0200
+Subject: [PATCH] arm64: dts: rockchip: add rk3308-cs307-e2w3 target and
+ rk3308 thermal/rng compatibles
+
+Add rk3308-cs307-e2w3.dtb to arch/arm64/boot/dts/rockchip/Makefile and
+register rockchip,rk3308-tsadc and rockchip,rk3308-rng compatibles in
+their respective drivers.
+---
+ arch/arm64/boot/dts/rockchip/Makefile | 1 +
+ drivers/char/hw_random/rockchip-rng.c | 1 +
+ drivers/thermal/rockchip_thermal.c    | 4 ++++
+ 3 files changed, 6 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
+index 4b60b4bd7d9d..8e05a2d1b2c7 100644
+--- a/arch/arm64/boot/dts/rockchip/Makefile
++++ b/arch/arm64/boot/dts/rockchip/Makefile
+@@ -14,6 +14,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += px30-ringneck-haikou.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += px30-ringneck-haikou-lvds-9904379.dtbo
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += px30-ringneck-haikou-video-demo.dtbo
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3308-bpi-p2-pro.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3308-cs307-e2w3.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3308-evb.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3308-roc-cc.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3308-rock-pi-s.dtb
+diff --git a/drivers/char/hw_random/rockchip-rng.c b/drivers/char/hw_random/rockchip-rng.c
+index 1d41ba2c29d4..74f539a32f96 100644
+--- a/drivers/char/hw_random/rockchip-rng.c
++++ b/drivers/char/hw_random/rockchip-rng.c
+@@ -465,6 +465,7 @@ static const struct dev_pm_ops rk_rng_pm_ops = {
+ };
+ 
+ static const struct of_device_id rk_rng_dt_match[] = {
++	{ .compatible = "rockchip,rk3308-rng", .data = (void *)&rk3568_soc_data },
+ 	{ .compatible = "rockchip,rk3568-rng", .data = (void *)&rk3568_soc_data },
+ 	{ .compatible = "rockchip,rk3576-rng", .data = (void *)&rk3576_soc_data },
+ 	{ .compatible = "rockchip,rk3588-rng", .data = (void *)&rk3588_soc_data },
+diff --git a/drivers/thermal/rockchip_thermal.c b/drivers/thermal/rockchip_thermal.c
+index 6efafcdcb1be..801d28c21988 100644
+--- a/drivers/thermal/rockchip_thermal.c
++++ b/drivers/thermal/rockchip_thermal.c
+@@ -1355,6 +1355,10 @@ static const struct of_device_id of_rockchip_thermal_match[] = {
+ 	{	.compatible = "rockchip,px30-tsadc",
+ 		.data = (void *)&px30_tsadc_data,
+ 	},
++	{
++		.compatible = "rockchip,rk3308-tsadc",
++		.data = (void *)&px30_tsadc_data,
++	},
+ 	{
+ 		.compatible = "rockchip,rv1108-tsadc",
+ 		.data = (void *)&rv1108_tsadc_data,
+-- 
+2.43.0

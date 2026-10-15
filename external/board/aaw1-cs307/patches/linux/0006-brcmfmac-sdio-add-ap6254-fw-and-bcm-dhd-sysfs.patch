@@ -1,0 +1,278 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AA-Proxy <noreply@aa-proxy.local>
+Date: Thu, 8 Oct 2026 18:45:00 +0200
+Subject: [PATCH] brcmfmac, rfkill-gpio: support AP625X Wi-Fi/BT on RK3308 CS307
+
+---
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+@@ -7,6 +7,7 @@
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+ #include <linux/device.h>
++#include <linux/delay.h>
+ #include <linux/firmware.h>
+ #include <linux/module.h>
+ #include <linux/bcm47xx_nvram.h>
+@@ -676,8 +677,15 @@
+ static void brcmf_fw_request_done(const struct firmware *fw, void *ctx)
+ {
+ 	struct brcmf_fw *fwctx = ctx;
++	int retry = 0;
+ 	int ret;
+ 
++	while (!fw && ++retry <= 30) {
++		msleep(500);
++		if (brcmf_fw_request_firmware(&fw, fwctx) == 0)
++			break;
++	}
++
+ 	ret = brcmf_fw_complete_request(fw, fwctx);
+ 
+ 	while (ret == 0 && ++fwctx->curpos < fwctx->req->n_items) {
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+@@ -28,8 +28,7 @@
+ 		/* If no explicit country code map is specified, check whether
+ 		 * the trivial map should be used.
+ 		 */
+-		settings->trivial_ccode_map =
+-			of_property_read_bool(np, "brcm,ccode-map-trivial");
++		settings->trivial_ccode_map = true;
+ 
+ 		/* The property is optional, so return success if it doesn't
+ 		 * exist. Otherwise propagate the error code.
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -22,6 +22,9 @@
+ #include <linux/module.h>
+ #include <linux/bcma/bcma.h>
+ #include <linux/debugfs.h>
++#include <linux/kobject.h>
++#include <linux/moduleparam.h>
++#include <linux/sysfs.h>
+ #include <linux/vmalloc.h>
+ #include <linux/unaligned.h>
+ #include <defs.h>
+@@ -617,6 +620,7 @@
+ BRCMF_FW_CLM_DEF(43430A1, "brcmfmac43430-sdio");
+ BRCMF_FW_DEF(43430B0, "brcmfmac43430b0-sdio");
+ BRCMF_FW_CLM_DEF(43439, "brcmfmac43439-sdio");
++BRCMF_FW_CLM_DEF(43454, "brcmfmac43454-sdio");
+ BRCMF_FW_CLM_DEF(43455, "brcmfmac43455-sdio");
+ BRCMF_FW_DEF(43456, "brcmfmac43456-sdio");
+ BRCMF_FW_CLM_DEF(4354, "brcmfmac4354-sdio");
+@@ -650,7 +654,7 @@
+ 	BRCMF_FW_ENTRY(BRCM_CC_43430_CHIP_ID, 0xFFFFFFFC, 43430B0),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4345_CHIP_ID, 0x00000200, 43456),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4345_CHIP_ID, 0xFFFFFDC0, 43455),
+-	BRCMF_FW_ENTRY(BRCM_CC_43454_CHIP_ID, 0x00000040, 43455),
++	BRCMF_FW_ENTRY(BRCM_CC_43454_CHIP_ID, 0x00000040, 43454),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4354_CHIP_ID, 0xFFFFFFFF, 4354),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4356_CHIP_ID, 0xFFFFFFFF, 4356),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4359_CHIP_ID, 0xFFFFFFFF, 4359),
+@@ -661,6 +665,39 @@
+ 	BRCMF_FW_ENTRY(CY_CC_43439_CHIP_ID, 0xFFFFFFFF, 43439),
+ };
+ 
++static int brcmf_bcmdhd_op_mode = 2;
++__module_param_call("bcmdhd.", op_mode, &param_ops_int, &brcmf_bcmdhd_op_mode,
++		    0644, -1, 0);
++
++static u32 brcmf_sdio_chip_id;
++static u32 brcmf_sdio_chip_rev;
++static struct kobject *brcmf_dhd_kobj;
++
++static ssize_t chip_show(struct kobject *kobj, struct kobj_attribute *attr,
++			 char *buf)
++{
++	return sprintf(buf, "%#x\n", brcmf_sdio_chip_id);
++}
++
++static ssize_t chiprev_show(struct kobject *kobj, struct kobj_attribute *attr,
++			    char *buf)
++{
++	return sprintf(buf, "%#x\n", brcmf_sdio_chip_rev);
++}
++
++static struct kobj_attribute brcmf_attr_chip = __ATTR_RO(chip);
++static struct kobj_attribute brcmf_attr_chiprev = __ATTR_RO(chiprev);
++
++static struct attribute *brcmf_dhd_attrs[] = {
++	&brcmf_attr_chip.attr,
++	&brcmf_attr_chiprev.attr,
++	NULL,
++};
++
++static const struct attribute_group brcmf_dhd_attr_group = {
++	.attrs = brcmf_dhd_attrs,
++};
++
+ #define TXCTL_CREDITS	2
+ 
+ static void pkt_align(struct sk_buff *p, int len, int align)
+@@ -4488,6 +4525,19 @@
+ 		goto fail;
+ 	}
+ 
++	brcmf_sdio_chip_id = bus->ci->chip;
++	brcmf_sdio_chip_rev = bus->ci->chiprev;
++	if (!brcmf_dhd_kobj) {
++		brcmf_dhd_kobj = kobject_create_and_add("bcm-dhd", NULL);
++		if (brcmf_dhd_kobj) {
++			if (sysfs_create_group(brcmf_dhd_kobj,
++					       &brcmf_dhd_attr_group)) {
++				kobject_put(brcmf_dhd_kobj);
++				brcmf_dhd_kobj = NULL;
++			}
++		}
++	}
++
+ 	spin_lock_init(&bus->rxctl_lock);
+ 	spin_lock_init(&bus->txq_lock);
+ 	init_waitqueue_head(&bus->ctrl_wait);
+--- a/net/rfkill/rfkill-gpio.c
++++ b/net/rfkill/rfkill-gpio.c
+@@ -12,15 +12,22 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/clk.h>
++#include <linux/delay.h>
+ #include <linux/slab.h>
+ #include <linux/acpi.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/pinctrl/consumer.h>
+ 
+ struct rfkill_gpio_data {
+ 	const char		*name;
+ 	enum rfkill_type	type;
+ 	struct gpio_desc	*reset_gpio;
+ 	struct gpio_desc	*shutdown_gpio;
++	struct gpio_desc	*rts_gpio;
++	struct gpio_desc	*wake_host_gpio;
++	struct pinctrl		*pinctrl;
++	struct pinctrl_state	*default_state;
++	struct pinctrl_state	*rts_gpio_state;
+ 
+ 	struct rfkill		*rfkill_dev;
+ 	struct clk		*clk;
+@@ -33,17 +40,52 @@
+ 	struct rfkill_gpio_data *rfkill = data;
+ 
+ 	if (!blocked && !IS_ERR(rfkill->clk) && !rfkill->clk_enabled) {
+-		int ret = clk_enable(rfkill->clk);
++		int ret = clk_prepare_enable(rfkill->clk);
+ 
+ 		if (ret)
+ 			return ret;
+ 	}
+ 
+-	gpiod_set_value_cansleep(rfkill->shutdown_gpio, !blocked);
+-	gpiod_set_value_cansleep(rfkill->reset_gpio, !blocked);
++	if (!blocked) {
++		if (rfkill->wake_host_gpio) {
++			gpiod_direction_output(rfkill->wake_host_gpio, 1);
++			msleep(20);
++		}
++
++		if (rfkill->shutdown_gpio) {
++			gpiod_set_value_cansleep(rfkill->shutdown_gpio, 0);
++			msleep(20);
++			gpiod_set_value_cansleep(rfkill->shutdown_gpio, 1);
++			msleep(20);
++		}
++
++		if (rfkill->reset_gpio) {
++			gpiod_set_value_cansleep(rfkill->reset_gpio, 0);
++			msleep(20);
++			gpiod_set_value_cansleep(rfkill->reset_gpio, 1);
++		}
++
++		if (rfkill->wake_host_gpio)
++			gpiod_direction_input(rfkill->wake_host_gpio);
++
++		if (rfkill->pinctrl && rfkill->rts_gpio &&
++		    !IS_ERR_OR_NULL(rfkill->rts_gpio_state) &&
++		    !IS_ERR_OR_NULL(rfkill->default_state)) {
++			pinctrl_select_state(rfkill->pinctrl,
++					     rfkill->rts_gpio_state);
++			gpiod_direction_output(rfkill->rts_gpio, 1);
++			msleep(100);
++			gpiod_direction_output(rfkill->rts_gpio, 0);
++			pinctrl_select_state(rfkill->pinctrl,
++					     rfkill->default_state);
++		}
++	} else {
++		gpiod_set_value_cansleep(rfkill->shutdown_gpio, 0);
++		gpiod_set_value_cansleep(rfkill->reset_gpio, 0);
++	}
+ 
+ 	if (blocked && !IS_ERR(rfkill->clk) && rfkill->clk_enabled)
+-		clk_disable(rfkill->clk);
++		clk_disable_unprepare(rfkill->clk);
+ 
+ 	rfkill->clk_enabled = !blocked;
+ 
+@@ -98,6 +140,7 @@
+ 	const char *name_property;
+ 	const char *type_property;
+ 	struct gpio_desc *gpio;
++	bool default_blocked;
+ 	int ret;
+ 
+ 	if (dmi_check_system(rfkill_gpio_deny_table))
+@@ -142,17 +185,43 @@
+ 
+ 	rfkill->shutdown_gpio = gpio;
+ 
++	gpio = devm_gpiod_get_optional(&pdev->dev, "rts", GPIOD_ASIS);
++	if (IS_ERR(gpio))
++		return PTR_ERR(gpio);
++
++	rfkill->rts_gpio = gpio;
++	if (rfkill->rts_gpio) {
++		rfkill->pinctrl = devm_pinctrl_get(&pdev->dev);
++		if (!IS_ERR(rfkill->pinctrl)) {
++			rfkill->default_state =
++				pinctrl_lookup_state(rfkill->pinctrl, "default");
++			rfkill->rts_gpio_state =
++				pinctrl_lookup_state(rfkill->pinctrl, "rts_gpio");
++		} else {
++			rfkill->pinctrl = NULL;
++		}
++	}
++
++	gpio = devm_gpiod_get_optional(&pdev->dev, "wake-host", GPIOD_ASIS);
++	if (IS_ERR(gpio))
++		return PTR_ERR(gpio);
++
++	rfkill->wake_host_gpio = gpio;
++
+ 	/* Make sure at-least one GPIO is defined for this instance */
+ 	if (!rfkill->reset_gpio && !rfkill->shutdown_gpio) {
+ 		dev_err(&pdev->dev, "invalid platform data\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	ret = gpiod_direction_output(rfkill->reset_gpio, true);
++	default_blocked =
++		device_property_present(&pdev->dev, "default-blocked");
++
++	ret = gpiod_direction_output(rfkill->reset_gpio, !default_blocked);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = gpiod_direction_output(rfkill->shutdown_gpio, true);
++	ret = gpiod_direction_output(rfkill->shutdown_gpio, !default_blocked);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -162,7 +231,7 @@
+ 	if (!rfkill->rfkill_dev)
+ 		return -ENOMEM;
+ 
+-	if (device_property_present(&pdev->dev, "default-blocked"))
++	if (default_blocked)
+ 		rfkill_init_sw_state(rfkill->rfkill_dev, true);
+ 
+ 	ret = rfkill_register(rfkill->rfkill_dev);

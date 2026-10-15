@@ -1,0 +1,27 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2021 Radxa Limited
+ */
+
+/dts-v1/;
+
+#include "rk3308-cs307.dtsi"
+
+/ {
+	model = "AAWireless 1";
+	compatible = "radxa,cs307-e2w3", "radxa,cs307", "rockchip,rk3308";
+};
+
+&emmc {
+	bus-width = <8>;
+	cap-mmc-highspeed;
+	disable-wp;
+	max-frequency = <50000000>;
+	no-sd;
+	no-sdio;
+	non-removable;
+	pinctrl-names = "default";
+	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd>;
+	vmmc-supply = <&vcc_io>;
+	status = "okay";
+};
