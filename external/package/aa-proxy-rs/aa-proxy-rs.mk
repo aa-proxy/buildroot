@@ -39,6 +39,9 @@ ifeq ($(BR2_PACKAGE_AA_PROXY_RS),y)
 ifeq ($(RUSTC_TARGET_NAME),arm-unknown-linux-gnueabihf)
 # disable wasm-scripting on armv6 (wasmtime doesn't support it)
 AA_PROXY_RS_CARGO_BUILD_OPTS += --no-default-features
+else ifneq ($(findstring aaw1,$(CONFIG_DIR)),)
+# disable wasm-scripting on AAWireless 1 (aaw1-cs307, aaw1-cs317)
+AA_PROXY_RS_CARGO_BUILD_OPTS += --no-default-features
 else
 # keep wasm-scripting, but disable io-uring
 AA_PROXY_RS_CARGO_BUILD_OPTS += --no-default-features --features wasm-scripting
