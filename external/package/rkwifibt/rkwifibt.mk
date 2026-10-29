@@ -76,16 +76,10 @@ define RKWIFIBT_INSTALL_TARGET_CMDS
 	$(INSTALL) -d $(TARGET_DIR)/lib/firmware/brcm
 	ln -sf /system/etc/firmware/fw_ap6254_ag.bin $(TARGET_DIR)/lib/firmware/brcm/brcmfmac43454-sdio.bin
 	ln -sf /system/etc/firmware/nvram_ap6254.txt $(TARGET_DIR)/lib/firmware/brcm/brcmfmac43454-sdio.txt
-	ln -sf /system/etc/firmware/fw_ap6254_ag.bin $(TARGET_DIR)/lib/firmware/brcm/brcmfmac43454-sdio.radxa,cs307-e2w3.bin
-	ln -sf /system/etc/firmware/nvram_ap6254.txt $(TARGET_DIR)/lib/firmware/brcm/brcmfmac43454-sdio.radxa,cs307-e2w3.txt
 	ln -sf /system/etc/firmware/fw_ap6255_ag.bin $(TARGET_DIR)/lib/firmware/brcm/brcmfmac43455-sdio.bin
 	ln -sf /system/etc/firmware/nvram_ap6255.txt $(TARGET_DIR)/lib/firmware/brcm/brcmfmac43455-sdio.txt
-	ln -sf /system/etc/firmware/fw_ap6255_ag.bin $(TARGET_DIR)/lib/firmware/brcm/brcmfmac43455-sdio.radxa,cs307-e2w3.bin
-	ln -sf /system/etc/firmware/nvram_ap6255.txt $(TARGET_DIR)/lib/firmware/brcm/brcmfmac43455-sdio.radxa,cs307-e2w3.txt
 	ln -sf /system/etc/firmware/fw_ap6256_ag.bin $(TARGET_DIR)/lib/firmware/brcm/brcmfmac43456-sdio.bin
 	ln -sf /system/etc/firmware/nvram_ap6256.txt $(TARGET_DIR)/lib/firmware/brcm/brcmfmac43456-sdio.txt
-	ln -sf /system/etc/firmware/fw_ap6256_ag.bin $(TARGET_DIR)/lib/firmware/brcm/brcmfmac43456-sdio.radxa,cs307-e2w3.bin
-	ln -sf /system/etc/firmware/nvram_ap6256.txt $(TARGET_DIR)/lib/firmware/brcm/brcmfmac43456-sdio.radxa,cs307-e2w3.txt
 
 	$(INSTALL) -D -m 0755 $(@D)/brcm_patchram_plus $(TARGET_DIR)/usr/bin/brcm_patchram_plus
 	$(INSTALL) -D -m 0755 $(RKWIFIBT_PACKAGE_DIR)/S10brcm_patchram $(TARGET_DIR)/etc/init.d/
