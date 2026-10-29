@@ -1,0 +1,17 @@
+config BR2_PACKAGE_CVI_OSDRV
+	bool "cvi-osdrv (SG2000/SG2002 hardware video codec kernel modules)"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Out-of-tree Sophgo/Cvitek kernel modules needed to use the
+	  hardware H.264/H.265/JPEG encoder and decoder of the
+	  CV181x family (SG2000/SG2002, Milk-V Duo S):
+
+	    cv181x_sys, cv181x_base, cv181x_vcodec, cv181x_jpeg
+	    and cvi_vc_driver (/dev/cvi_vc_enc%d, /dev/cvi_vc_dec%d)
+
+	  Built from https://github.com/sophgo/osdrv against the kernel
+	  built by Buildroot. Needs CONFIG_ION and CMA in the kernel
+	  (already enabled in the milkv-duos board kernel config).
+
+comment "cvi-osdrv needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL

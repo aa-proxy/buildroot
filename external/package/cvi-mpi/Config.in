@@ -1,0 +1,17 @@
+config BR2_PACKAGE_CVI_MPI
+	bool "cvi-mpi (SG2000/SG2002 libsys, libvenc, libvdec)"
+	depends on BR2_riscv
+	select BR2_PACKAGE_CVI_OSDRV
+	help
+	  Userspace libraries of the Sophgo/Cvitek MPI used to access the
+	  hardware H.264/H.265/JPEG encoder and decoder of the CV181x
+	  family (SG2000/SG2002, Milk-V Duo S):
+
+	    libsys   - ION/VB/system helpers (/dev/cvi-base, /dev/cvi-sys, /dev/ion)
+	    libvenc  - CVI_VENC_* (talks to /dev/cvi_vc_enc%d)
+	    libvdec  - CVI_VDEC_* (talks to /dev/cvi_vc_dec%d)
+
+	  Headers are installed to staging in usr/include/cvi_mpi.
+	  Kernel modules come from cvi-osdrv.
+
+	  https://github.com/sophgo/cvi_mpi
