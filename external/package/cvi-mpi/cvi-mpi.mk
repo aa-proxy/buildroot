@@ -29,10 +29,18 @@ define CVI_MPI_SELECT_CHIP
 endef
 CVI_MPI_POST_PATCH_HOOKS += CVI_MPI_SELECT_CHIP
 
+# libsys uses atomic_bool, which on RISC-V without sub-word atomics ends up as
+# a call to __atomic_compare_exchange_1 from libatomic. Upstream does not link
+# it, so libsys.so has an undefined symbol (and no DT_NEEDED for libatomic).
+# Only the sys module gets LIBS: libvdec is linked with plain ld.
+CVI_MPI_SYS_MAKE_OPTS = $(CVI_MPI_MAKE_OPTS) LIBS="-latomic"
+
 # Per-module Makefiles rely on $(PWD), so cd into each directory
 define CVI_MPI_BUILD_CMDS
 	mkdir -p $(@D)/lib/3rd
-	$(foreach m,$(CVI_MPI_MODULES), \
+	cd $(@D)/modules/sys && \
+		$(TARGET_MAKE_ENV) $(MAKE) $(CVI_MPI_SYS_MAKE_OPTS) all
+	$(foreach m,venc vdec, \
 		cd $(@D)/modules/$(m) && \
 		$(TARGET_MAKE_ENV) $(MAKE) $(CVI_MPI_MAKE_OPTS) all || exit 1;)
 endef
@@ -50,11 +58,22 @@ define CVI_MPI_INSTALL_STAGING_CMDS
 	$(foreach m,$(CVI_MPI_MODULES), \
 		$(INSTALL) -D -m 0755 $(@D)/lib/lib$(m).so $(STAGING_DIR)/usr/lib/lib$(m).so; \
 		$(INSTALL) -D -m 0644 $(@D)/lib/lib$(m).a $(STAGING_DIR)/usr/lib/lib$(m).a;)
+	atomic=`$(TARGET_CC) -print-file-name=libatomic.so.1`; \
+	if [ -f "$$atomic" ]; then \
+		$(INSTALL) -D -m 0755 "$$atomic" $(STAGING_DIR)/usr/lib/libatomic.so.1; \
+	fi
 endef
 
+# libsys.so needs libatomic.so.1 at runtime; make sure it is on the target
 define CVI_MPI_INSTALL_TARGET_CMDS
 	$(foreach m,$(CVI_MPI_MODULES), \
 		$(INSTALL) -D -m 0755 $(@D)/lib/lib$(m).so $(TARGET_DIR)/usr/lib/lib$(m).so;)
+	atomic=`$(TARGET_CC) -print-file-name=libatomic.so.1`; \
+	if [ -f "$$atomic" ]; then \
+		$(INSTALL) -D -m 0755 "$$atomic" $(TARGET_DIR)/usr/lib/libatomic.so.1; \
+	else \
+		echo "WARNING: libatomic.so.1 not found in the toolchain, libsys.so will not load"; \
+	fi
 endef
 
 $(eval $(generic-package))
