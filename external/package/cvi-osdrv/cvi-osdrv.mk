@@ -10,6 +10,15 @@ CVI_OSDRV_SITE = $(call github,sophgo,osdrv,$(CVI_OSDRV_VERSION))
 CVI_OSDRV_LICENSE = GPL-2.0
 CVI_OSDRV_DEPENDENCIES = linux
 
+# The VPU firmware is loaded by cvi_vc_driver from /usr/share/fw_vcodec at
+# channel creation time (CVI_VENC_CreateChn fails with NULL_PTR without it).
+# coda980.bin: H.264 core, monet.bin: H.265 core. Taken from the Milk-V SDK
+# at a pinned commit.
+CVI_OSDRV_FW_URL = https://raw.githubusercontent.com/milkv-duo/duo-buildroot-sdk-v2/6f8962c394dd0a05729abb089f0feb7d5cc4aa5e/device/generic/rootfs_overlay/common/usr/share/fw_vcodec
+CVI_OSDRV_EXTRA_DOWNLOADS = \
+	$(CVI_OSDRV_FW_URL)/coda980.bin \
+	$(CVI_OSDRV_FW_URL)/monet.bin
+
 # Only what is needed for the video codec. Order matters: every module
 # picks up the Module.symvers of the previous ones (KBUILD_EXTRA_SYMBOLS).
 CVI_OSDRV_MODULES = sys base vcodec jpeg cvi_vc_drv
@@ -37,6 +46,10 @@ define CVI_OSDRV_INSTALL_TARGET_CMDS
 		find $(@D)/interdrv/$(m) -maxdepth 1 -name '*.ko' \
 			-exec $(INSTALL) -m 0644 {} \
 			$(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/ \; ;)
+	$(INSTALL) -D -m 0644 $(CVI_OSDRV_DL_DIR)/coda980.bin \
+		$(TARGET_DIR)/usr/share/fw_vcodec/coda980.bin
+	$(INSTALL) -D -m 0644 $(CVI_OSDRV_DL_DIR)/monet.bin \
+		$(TARGET_DIR)/usr/share/fw_vcodec/monet.bin
 endef
 
 $(eval $(generic-package))
