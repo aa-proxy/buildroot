@@ -48,6 +48,17 @@ AA_PROXY_RS_CARGO_BUILD_OPTS += --no-default-features --features wasm-scripting
 endif
 endif
 
+# Sophgo SG2000/SG2002 (Milk-V Duo S) hardware H.264 codec for the video overlay:
+# build aa-proxy-rs with the "cvi" feature against libsys/libvenc/libvdec from cvi-mpi
+# (see build.rs for CVI_MPI_INC / CVI_MPI_LIB / CVI_MPI_LINK).
+ifeq ($(BR2_PACKAGE_AA_PROXY_RS)$(BR2_PACKAGE_CVI_MPI),yy)
+AA_PROXY_RS_DEPENDENCIES += cvi-mpi
+AA_PROXY_RS_CARGO_ENV += \
+    CVI_MPI_INC="$(STAGING_DIR)/usr/include/cvi_mpi" \
+    CVI_MPI_LIB="$(STAGING_DIR)/usr/lib"
+AA_PROXY_RS_CARGO_BUILD_OPTS += --features cvi
+endif
+
 # default config file generator
 define AA_PROXY_RS_GENERATE_CONFIG
     cd $(@D) && env PATH=$${PATH}:$(HOST_DIR)/bin cargo run --release --bin generate_config
