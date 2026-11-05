@@ -37,9 +37,9 @@ python3 ${BUILDROOT_DIR}/tools/image_tool/mk_imgHeader.py $PARTITION_XML ${OUT_M
 # This toolchain is compatible both with our Buildroot host
 # and with the Rust-supported riscv64-musl target.
 if [ ! -d ${BUILD_DIR}/riscv ]; then
-    wget https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2023.09.27/riscv64-musl-ubuntu-20.04-gcc-nightly-2023.09.27-nightly.tar.gz -P /tmp
-    tar -xzf /tmp/riscv64-musl-ubuntu-20.04-gcc-nightly-2023.09.27-nightly.tar.gz -C "${BUILD_DIR}"
-    rm /tmp/riscv64-musl-ubuntu-20.04-gcc-nightly-2023.09.27-nightly.tar.gz
+    wget -O /tmp/riscv-toolchain.tar.gz https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2023.09.27/riscv64-musl-ubuntu-20.04-gcc-nightly-2023.09.27-nightly.tar.gz
+    tar -xzf /tmp/riscv-toolchain.tar.gz -C "${BUILD_DIR}"
+    rm /tmp/riscv-toolchain.tar.gz
 else
     echo "Rust toolchain already downloaded, skipping."
 fi
