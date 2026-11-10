@@ -8,6 +8,11 @@ case "$1" in
 		echo "Loading kernel modules..."
 		modprobe -a brcmfmac hci_uart # Wireless drivers
 		modprobe -a dwc2 libcomposite # USB gadget drivers
+		# Hardware H.264 codec (V4L2 M2M) for the video overlay; built only for
+		# the boards that have it (Raspberry Pi 3, 4 and Zero 2 W)
+		if modinfo bcm2835_codec >/dev/null 2>&1; then
+			modprobe bcm2835_codec
+		fi
 		;;
 	*)
 		echo "Usage: $0 {start}"
